@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Pre from "@/components/markdown/pre";
 import Note from "@/components/markdown/note";
 import { Stepper, StepperItem } from "@/components/markdown/stepper";
-import Image from "@/components/markdown/image";
+import Image from "@/components/markdown/images";
 import Link from "@/components/markdown/link";
 import Outlet from "@/components/markdown/outlet";
 import Files from "@/components/markdown/files";
