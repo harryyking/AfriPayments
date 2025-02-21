@@ -1,5 +1,9 @@
-import "./globals.css";
-import Navbar from "@/components/Navbar";
+import '@/styles/globals.css'
+import { Navbar } from '@/components/Navbar';
+import {Bricolage_Grotesque} from 'next/font/google'
+
+const brandFont = Bricolage_Grotesque({subsets: ['latin']})
+
 
 export default function RootLayout({
   children,
@@ -8,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={brandFont.className}>
         <Navbar />
         {children}
       </body>
