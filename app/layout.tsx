@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="black">
+    <html lang="en" data-theme="silk">
       <body className={brandFont.className}>
         <div className='p-2'>
         {children}
