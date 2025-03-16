@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="silk">
+    <html lang="en" data-theme="light">
       <body className={brandFont.className}>
         <div className='p-2 min-h-screen flex justify-center items-center'>
         {children}
