@@ -8,7 +8,7 @@ interface VoiceSelectorProps {
 export default function VoiceSelector({ value, onChange }: VoiceSelectorProps) {
   return (
     <select
-      className=" select select-primary w-full p-3"
+      className=" select select-lg select-primary w-full p-3"
       value={value}
       onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
     >
