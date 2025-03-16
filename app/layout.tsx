@@ -1,5 +1,4 @@
 import '@/styles/globals.css'
-import { Navbar } from '@/components/Navbar';
 import {Inter} from 'next/font/google'
 
 const brandFont = Inter({subsets: ['latin']})
@@ -11,9 +10,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="black">
       <body className={brandFont.className}>
-        <Navbar />
         <div className='p-2'>
         {children}
         </div>
