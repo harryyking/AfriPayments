@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="silk">
       <body className={brandFont.className}>
-        <div className='p-2'>
+        <div className='p-2 min-h-screen flex justify-center items-center'>
         {children}
         </div>
       </body>

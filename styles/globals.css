@@ -5,11 +5,10 @@
 
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
-
 @plugin "daisyui" {
-  themes: silk;
+  themes: light --default, dark --prefersdark, silk;
 }
+
 
 
 @layer base {
