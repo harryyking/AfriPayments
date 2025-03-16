@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+
 import {Inter} from 'next/font/google'
 
 const brandFont = Inter({subsets: ['latin']})
