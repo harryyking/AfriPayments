@@ -8,7 +8,7 @@ interface ThreadInputProps {
 export default function ThreadInput({ value, onChange }: ThreadInputProps) {
   return (
     <textarea
-      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="textarea"
       rows={5}
       placeholder="Paste an X thread URL or text here"
       value={value}

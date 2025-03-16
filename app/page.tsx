@@ -146,7 +146,7 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
+    <div className="container mx-auto p-4 max-w-2xl min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center">X Thread to Podcast Converter</h1>
       <div className="space-y-4">
         <ThreadInput value={threadInput} onChange={setThreadInput} />
