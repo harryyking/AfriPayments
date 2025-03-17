@@ -1,8 +1,8 @@
 import '@/styles/globals.css'
 
-import {Lato} from 'next/font/google'
+import {Inter} from 'next/font/google'
 
-const brandFont = Lato({subsets: ['latin'], weight: ["100", "300", "700"]})
+const brandFont = Inter({subsets: ['latin']})
 
 
 export default function RootLayout({
@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="bumblebee">
+    <html lang="en" data-theme="emerald">
       <body className={brandFont.className}>
         <div className='p-2 min-h-screen flex justify-center items-center'>
         {children}
