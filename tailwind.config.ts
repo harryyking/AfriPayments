@@ -58,6 +58,11 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("daisyui")],
+  daisyui : {
+	theme: [
+		"light", "dark", "bumblebee"
+  ]
+  }
 };
 export default config;
