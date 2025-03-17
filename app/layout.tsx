@@ -1,8 +1,8 @@
 import '@/styles/globals.css'
 
-import {Inter} from 'next/font/google'
+import {Lato} from 'next/font/google'
 
-const brandFont = Inter({subsets: ['latin']})
+const brandFont = Lato({subsets: ['latin'], weight: ["100", "300", "700"]})
 
 
 export default function RootLayout({
