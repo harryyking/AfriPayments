@@ -7,7 +7,7 @@ interface ConvertButtonProps {
   export default function ConvertButton({ onClick, disabled, isLoading }: ConvertButtonProps) {
     return (
       <button
-        className={`btn w-full ${disabled ? 'btn-disabled' : 'btn-primary'}`}
+        className={`btn btn-primary w-full ${disabled ? 'btn-disabled' : 'btn-primary'}`}
         onClick={onClick}
         disabled={disabled}
       >
