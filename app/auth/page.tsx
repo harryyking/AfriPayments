@@ -26,11 +26,13 @@ const Register = () => {
   
 
   return (
-    <div className="min-h-screen w-full bg-base-200 flex items-center justify-center p-6">
+    <div className="min-h-screen w-full bg-base-200 flex items-center justify-center p-4">
       
 
-        <div className="card border shadow-sm p-6">
+        <div className="card border shadow-sm p-4">
             <div className=" card-title text-xl">Sign in</div>
+
+            <div className='card-actions'>
             <button
               className="w-full btn btn-primary font-medium"
             
@@ -66,6 +68,7 @@ const Register = () => {
                 </>
               )}
             </button>
+            </div>
           </div>
           
           <div className="flex flex-col text-center text-sm text-gray-500">
