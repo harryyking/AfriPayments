@@ -26,6 +26,8 @@ import ImageGallery from "@/components/ImageGallery"
 import { useHistory } from "@/lib/useHistory"
 import type { TextState, Preset } from "@/types"
 
+
+
 export default function ClientDashboard() {
   const { data: session, status } = useSession()
   const userId = session?.user?.email

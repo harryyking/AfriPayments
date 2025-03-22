@@ -7,8 +7,8 @@ export default async function Dashboard() {
   const session = await getServerSession(authOptions);
 
   // If no session exists, redirect to sign-in page
-  if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/dashboard");
+  if (!session || !session.user) {
+    redirect("/auth");
   }
 
   // Since this is a client component, we'll still use useSession for client-side state
