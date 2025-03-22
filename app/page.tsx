@@ -128,10 +128,8 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-transparent bg-clip-text">
-            Text Overlay Studio
-          </h1>
-          <p className="text-gray-500 mt-2">Create stunning text overlays for your images</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary">Text Overlay Studio</h1>
+          <p className="text-muted-foreground mt-2">Create stunning text overlays for your images</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -148,12 +146,7 @@ export default function Home() {
                 </Button>
               </div>
               <div>
-                <Button
-                  variant="default"
-                  className="bg-orange-500 hover:bg-orange-600"
-                  onClick={handleDownload}
-                  disabled={isDownloading}
-                >
+                <Button variant="default" onClick={handleDownload} disabled={isDownloading}>
                   <Download className="h-4 w-4 mr-2" />
                   {isDownloading ? "Exporting..." : "Export"}
                 </Button>
@@ -185,9 +178,9 @@ export default function Home() {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="space-y-4">
-                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition cursor-pointer">
-                        <ImageIcon className="h-10 w-10 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500 mb-2">Drag and drop or click to upload</p>
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 bg-muted hover:bg-accent transition cursor-pointer">
+                        <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
+                        <p className="text-sm text-muted-foreground mb-2">Drag and drop or click to upload</p>
                         <Input
                           type="file"
                           accept="image/*"
@@ -503,11 +496,7 @@ export default function Home() {
                     </div>
                   )}
 
-                  <Button
-                    className="w-full bg-orange-500 hover:bg-orange-600"
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                  >
+                  <Button className="w-full" onClick={handleDownload} disabled={isDownloading}>
                     <Download className="h-4 w-4 mr-2" />
                     {isDownloading ? "Processing..." : "Download Image"}
                   </Button>
@@ -526,7 +515,7 @@ export default function Home() {
                     Preview
                   </h3>
                 </div>
-                <div className="p-6 flex items-center justify-center bg-[#f5f5f5] dark:bg-[#1a1a1a] min-h-[500px]">
+                <div className="p-6 flex items-center justify-center bg-muted dark:bg-muted min-h-[500px]">
                   <div
                     ref={previewRef}
                     className="relative overflow-hidden max-w-full max-h-full"
