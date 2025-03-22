@@ -1,21 +1,11 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useRef } from "react"
 import html2canvas from "html2canvas"
 import { toast } from "react-hot-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import { useHistory } from "../lib/useHistory"
 import type { TextState, Preset } from "../types"
-import { Upload, ImageIcon, Type, Download, Undo2, Redo2, Palette, Sparkles } from "lucide-react"
+import { Upload, ImageIcon, Type, Download, Undo2, Redo2, Palette, Sparkles } from 'lucide-react'
 
 export default function Home() {
   const [image, setImage] = useState<string>("/default-image.jpg")
@@ -38,6 +28,7 @@ export default function Home() {
   const [fileName, setFileName] = useState<string>("text-overlay-image")
   const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png")
   const [jpegQuality, setJpegQuality] = useState<number>(0.8)
+  const [activeTab, setActiveTab] = useState<string>("upload")
   const previewRef = useRef<HTMLDivElement>(null)
 
   const handleDownload = async () => {
@@ -125,11 +116,13 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-base-200 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary">Text Overlay Studio</h1>
-          <p className="text-muted-foreground mt-2">Create stunning text overlays for your images</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary">
+            Text Overlay Studio
+          </h1>
+          <p className="text-base-content/70 mt-2">Create stunning text overlays for your images</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -138,172 +131,214 @@ export default function Home() {
             {/* Undo/Redo Controls */}
             <div className="flex justify-between items-center mb-4">
               <div className="flex space-x-2">
-                <Button variant="outline" size="icon" onClick={undo} disabled={!canUndo} title="Undo">
+                <button 
+                  className="btn btn-outline btn-sm btn-square"
+                  onClick={undo} 
+                  disabled={!canUndo}
+                  title="Undo"
+                >
                   <Undo2 className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={redo} disabled={!canRedo} title="Redo">
+                </button>
+                <button 
+                  className="btn btn-outline btn-sm btn-square"
+                  onClick={redo} 
+                  disabled={!canRedo}
+                  title="Redo"
+                >
                   <Redo2 className="h-4 w-4" />
-                </Button>
+                </button>
               </div>
               <div>
-                <Button variant="default" onClick={handleDownload} disabled={isDownloading}>
+                <button 
+                  className="btn btn-primary btn-sm"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
                   <Download className="h-4 w-4 mr-2" />
-                  {isDownloading ? "Exporting..." : "Export"}
-                </Button>
+                  {isDownloading ? 'Exporting...' : 'Export'}
+                </button>
               </div>
             </div>
 
-            <Tabs defaultValue="upload" className="w-full">
-              <TabsList className="grid grid-cols-4 mb-4">
-                <TabsTrigger value="upload">
-                  <Upload className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Upload</span>
-                </TabsTrigger>
-                <TabsTrigger value="text">
-                  <Type className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Text</span>
-                </TabsTrigger>
-                <TabsTrigger value="style">
-                  <Palette className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Style</span>
-                </TabsTrigger>
-                <TabsTrigger value="presets">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Presets</span>
-                </TabsTrigger>
-              </TabsList>
+            {/* Tabs */}
+            <div className="tabs tabs-boxed mb-4">
+              <a 
+                className={`tab ${activeTab === "upload" ? "tab-active" : ""}`}
+                onClick={() => setActiveTab("upload")}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Upload</span>
+              </a>
+              <a 
+                className={`tab ${activeTab === "text" ? "tab-active" : ""}`}
+                onClick={() => setActiveTab("text")}
+              >
+                <Type className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Text</span>
+              </a>
+              <a 
+                className={`tab ${activeTab === "style" ? "tab-active" : ""}`}
+                onClick={() => setActiveTab("style")}
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Style</span>
+              </a>
+              <a 
+                className={`tab ${activeTab === "presets" ? "tab-active" : ""}`}
+                onClick={() => setActiveTab("presets")}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Presets</span>
+              </a>
+            </div>
 
+            {/* Tab Content */}
+            <div className="space-y-4">
               {/* Upload Tab */}
-              <TabsContent value="upload" className="space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
+              {activeTab === "upload" && (
+                <div className="card bg-base-100 shadow-md">
+                  <div className="card-body">
                     <div className="space-y-4">
-                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 bg-muted hover:bg-accent transition cursor-pointer">
-                        <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground mb-2">Drag and drop or click to upload</p>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-base-300 rounded-lg p-6 bg-base-200 hover:bg-base-300 transition cursor-pointer">
+                        <ImageIcon className="h-10 w-10 text-base-content/50 mb-2" />
+                        <p className="text-sm text-base-content/70 mb-2">Drag and drop or click to upload</p>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleImageUpload} 
+                          className="hidden" 
                           id="image-upload"
                         />
-                        <Button variant="outline" onClick={() => document.getElementById("image-upload")?.click()}>
+                        <button 
+                          className="btn btn-outline btn-sm"
+                          onClick={() => document.getElementById('image-upload')?.click()}
+                        >
                           Choose Image
-                        </Button>
+                        </button>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="brightness">Brightness</Label>
-                        <Slider
-                          id="brightness"
-                          min={0.2}
-                          max={2}
-                          step={0.1}
-                          value={[state.brightness]}
-                          onValueChange={(value) => addToHistory({ ...state, brightness: value[0] })}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Brightness</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="0.2" 
+                          max="2" 
+                          step="0.1" 
+                          value={state.brightness}
+                          onChange={(e) => addToHistory({ ...state, brightness: parseFloat(e.target.value) })}
+                          className="range range-primary"
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="contrast">Contrast</Label>
-                        <Slider
-                          id="contrast"
-                          min={0.2}
-                          max={2}
-                          step={0.1}
-                          value={[state.contrast]}
-                          onValueChange={(value) => addToHistory({ ...state, contrast: value[0] })}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Contrast</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="0.2" 
+                          max="2" 
+                          step="0.1" 
+                          value={state.contrast}
+                          onChange={(e) => addToHistory({ ...state, contrast: parseFloat(e.target.value) })}
+                          className="range range-primary"
                         />
                       </div>
 
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="overlay"
-                          checked={state.useOverlay}
-                          onCheckedChange={(checked) => addToHistory({ ...state, useOverlay: checked })}
-                        />
-                        <Label htmlFor="overlay">Add dark overlay</Label>
+                      <div className="form-control">
+                        <label className="label cursor-pointer">
+                          <span className="label-text">Add dark overlay</span>
+                          <input 
+                            type="checkbox" 
+                            className="toggle toggle-primary"
+                            checked={state.useOverlay}
+                            onChange={(e) => addToHistory({ ...state, useOverlay: e.target.checked })}
+                          />
+                        </label>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </div>
+                </div>
+              )}
 
               {/* Text Tab */}
-              <TabsContent value="text" className="space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
+              {activeTab === "text" && (
+                <div className="card bg-base-100 shadow-md">
+                  <div className="card-body">
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="text">Text Content</Label>
-                        <Input
-                          id="text"
-                          value={state.text}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Text Content</span>
+                        </label>
+                        <input 
+                          type="text" 
+                          value={state.text} 
                           onChange={(e) => addToHistory({ ...state, text: e.target.value })}
                           placeholder="Enter your text"
+                          className="input input-bordered w-full"
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="font">Font Family</Label>
-                        <Select value={state.font} onValueChange={(value) => addToHistory({ ...state, font: value })}>
-                          <SelectTrigger id="font">
-                            <SelectValue placeholder="Select font" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="font-montserrat">Montserrat</SelectItem>
-                            <SelectItem value="font-roboto">Roboto</SelectItem>
-                            <SelectItem value="font-poppins">Poppins</SelectItem>
-                            <SelectItem value="font-playfair">Playfair Display</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="fontSize">Font Size</Label>
-                        <div className="flex items-center space-x-2">
-                          <Slider
-                            id="fontSize"
-                            min={12}
-                            max={120}
-                            step={1}
-                            value={[state.fontSize]}
-                            onValueChange={(value) => addToHistory({ ...state, fontSize: value[0] })}
-                            className="flex-1"
-                          />
-                          <span className="text-sm text-gray-500 w-8 text-right">{state.fontSize}px</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="fontWeight">Font Weight</Label>
-                        <Select
-                          value={state.fontWeight}
-                          onValueChange={(value) => addToHistory({ ...state, fontWeight: value })}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Font Family</span>
+                        </label>
+                        <select 
+                          className="select select-bordered w-full"
+                          value={state.font}
+                          onChange={(e) => addToHistory({ ...state, font: e.target.value })}
                         >
-                          <SelectTrigger id="fontWeight">
-                            <SelectValue placeholder="Select weight" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="400">Regular (400)</SelectItem>
-                            <SelectItem value="500">Medium (500)</SelectItem>
-                            <SelectItem value="600">Semi-Bold (600)</SelectItem>
-                            <SelectItem value="700">Bold (700)</SelectItem>
-                            <SelectItem value="800">Extra Bold (800)</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          <option value="font-montserrat">Montserrat</option>
+                          <option value="font-roboto">Roboto</option>
+                          <option value="font-poppins">Poppins</option>
+                          <option value="font-playfair">Playfair Display</option>
+                        </select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="textColor">Text Color</Label>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Font Size: {state.fontSize}px</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="12" 
+                          max="120" 
+                          step="1" 
+                          value={state.fontSize}
+                          onChange={(e) => addToHistory({ ...state, fontSize: parseInt(e.target.value) })}
+                          className="range range-primary"
+                        />
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Font Weight</span>
+                        </label>
+                        <select 
+                          className="select select-bordered w-full"
+                          value={state.fontWeight}
+                          onChange={(e) => addToHistory({ ...state, fontWeight: e.target.value })}
+                        >
+                          <option value="400">Regular (400)</option>
+                          <option value="500">Medium (500)</option>
+                          <option value="600">Semi-Bold (600)</option>
+                          <option value="700">Bold (700)</option>
+                          <option value="800">Extra Bold (800)</option>
+                        </select>
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Text Color</span>
+                        </label>
                         <div className="flex items-center space-x-2">
                           <div
-                            className="w-8 h-8 rounded-full border border-gray-300"
+                            className="w-8 h-8 rounded-full border border-base-300"
                             style={{ backgroundColor: state.textColor }}
                           />
-                          <Input
-                            id="textColor"
+                          <input
                             type="color"
                             value={state.textColor}
                             onChange={(e) => addToHistory({ ...state, textColor: e.target.value })}
@@ -312,257 +347,257 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </div>
+                </div>
+              )}
 
               {/* Style Tab */}
-              <TabsContent value="style" className="space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
+              {activeTab === "style" && (
+                <div className="card bg-base-100 shadow-md">
+                  <div className="card-body">
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="position-x">Horizontal Position (%)</Label>
-                        <div className="flex items-center space-x-2">
-                          <Slider
-                            id="position-x"
-                            min={0}
-                            max={100}
-                            step={1}
-                            value={[state.position.x]}
-                            onValueChange={(value) =>
-                              addToHistory({
-                                ...state,
-                                position: { ...state.position, x: value[0] },
-                              })
-                            }
-                            className="flex-1"
-                          />
-                          <span className="text-sm text-gray-500 w-8 text-right">{state.position.x}%</span>
-                        </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Horizontal Position: {state.position.x}%</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="1" 
+                          value={state.position.x}
+                          onChange={(e) => addToHistory({ 
+                            ...state, 
+                            position: { ...state.position, x: parseInt(e.target.value) } 
+                          })}
+                          className="range range-primary"
+                        />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="position-y">Vertical Position (%)</Label>
-                        <div className="flex items-center space-x-2">
-                          <Slider
-                            id="position-y"
-                            min={0}
-                            max={100}
-                            step={1}
-                            value={[state.position.y]}
-                            onValueChange={(value) =>
-                              addToHistory({
-                                ...state,
-                                position: { ...state.position, y: value[0] },
-                              })
-                            }
-                            className="flex-1"
-                          />
-                          <span className="text-sm text-gray-500 w-8 text-right">{state.position.y}%</span>
-                        </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Vertical Position: {state.position.y}%</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="1" 
+                          value={state.position.y}
+                          onChange={(e) => addToHistory({ 
+                            ...state, 
+                            position: { ...state.position, y: parseInt(e.target.value) } 
+                          })}
+                          className="range range-primary"
+                        />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="rotation">Rotation (degrees)</Label>
-                        <div className="flex items-center space-x-2">
-                          <Slider
-                            id="rotation"
-                            min={-180}
-                            max={180}
-                            step={1}
-                            value={[state.rotation]}
-                            onValueChange={(value) => addToHistory({ ...state, rotation: value[0] })}
-                            className="flex-1"
-                          />
-                          <span className="text-sm text-gray-500 w-8 text-right">{state.rotation}°</span>
-                        </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Rotation: {state.rotation}°</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="-180" 
+                          max="180" 
+                          step="1" 
+                          value={state.rotation}
+                          onChange={(e) => addToHistory({ ...state, rotation: parseInt(e.target.value) })}
+                          className="range range-primary"
+                        />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="opacity">Opacity</Label>
-                        <div className="flex items-center space-x-2">
-                          <Slider
-                            id="opacity"
-                            min={0}
-                            max={1}
-                            step={0.05}
-                            value={[state.opacity]}
-                            onValueChange={(value) => addToHistory({ ...state, opacity: value[0] })}
-                            className="flex-1"
-                          />
-                          <span className="text-sm text-gray-500 w-8 text-right">
-                            {Math.round(state.opacity * 100)}%
-                          </span>
-                        </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Opacity: {Math.round(state.opacity * 100)}%</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="1" 
+                          step="0.05" 
+                          value={state.opacity}
+                          onChange={(e) => addToHistory({ ...state, opacity: parseFloat(e.target.value) })}
+                          className="range range-primary"
+                        />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="backgroundColor">Background Color</Label>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Background Color</span>
+                        </label>
                         <div className="flex items-center space-x-2">
                           <div
-                            className="w-8 h-8 rounded-full border border-gray-300"
+                            className="w-8 h-8 rounded-full border border-base-300"
                             style={{ backgroundColor: state.backgroundColor }}
                           />
-                          <Input
-                            id="backgroundColor"
+                          <input
                             type="color"
                             value={state.backgroundColor === "transparent" ? "#ffffff" : state.backgroundColor}
                             onChange={(e) => addToHistory({ ...state, backgroundColor: e.target.value })}
                             className="w-full h-10"
                           />
-                          <Button
-                            variant="outline"
-                            size="sm"
+                          <button
+                            className="btn btn-outline btn-sm"
                             onClick={() => addToHistory({ ...state, backgroundColor: "transparent" })}
                           >
                             Clear
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </div>
+                </div>
+              )}
 
               {/* Presets Tab */}
-              <TabsContent value="presets" className="space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
+              {activeTab === "presets" && (
+                <div className="card bg-base-100 shadow-md">
+                  <div className="card-body">
                     <div className="grid grid-cols-1 gap-4">
                       {presets.map((preset, index) => (
-                        <Button
+                        <button
                           key={index}
-                          variant="outline"
-                          className="h-auto py-4 justify-start"
+                          className="btn btn-outline justify-start h-auto py-4 normal-case"
                           onClick={() => applyPreset(preset)}
                         >
                           <div className="flex items-center space-x-3 w-full">
-                            <div className="w-8 h-8 rounded-full" style={{ backgroundColor: preset.textColor }} />
-                            <div className="flex-1">
-                              <p className="font-medium text-left">{preset.name}</p>
-                              <p className="text-xs text-gray-500 text-left">
+                            <div 
+                              className="w-8 h-8 rounded-full" 
+                              style={{ backgroundColor: preset.textColor }}
+                            />
+                            <div className="flex-1 text-left">
+                              <p className="font-medium">{preset.name}</p>
+                              <p className="text-xs opacity-70">
                                 {preset.font.replace("font-", "")} • {preset.fontSize}px • Weight {preset.fontWeight}
                               </p>
                             </div>
                           </div>
-                        </Button>
+                        </button>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Export Options */}
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-medium mb-4">Export Options</h3>
+            <div className="card bg-base-100 shadow-md">
+              <div className="card-body">
+                <h3 className="card-title">Export Options</h3>
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fileName">File Name</Label>
-                    <Input
-                      id="fileName"
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">File Name</span>
+                    </label>
+                    <input
+                      type="text"
                       value={fileName}
                       onChange={(e) => setFileName(e.target.value || "text-overlay-image")}
                       placeholder="Enter file name"
+                      className="input input-bordered w-full"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="exportFormat">Format</Label>
-                    <Select value={exportFormat} onValueChange={(value: "png" | "jpeg") => setExportFormat(value)}>
-                      <SelectTrigger id="exportFormat">
-                        <SelectValue placeholder="Select format" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="png">PNG</SelectItem>
-                        <SelectItem value="jpeg">JPEG</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Format</span>
+                    </label>
+                    <select
+                      className="select select-bordered w-full"
+                      value={exportFormat}
+                      onChange={(e) => setExportFormat(e.target.value as "png" | "jpeg")}
+                    >
+                      <option value="png">PNG</option>
+                      <option value="jpeg">JPEG</option>
+                    </select>
                   </div>
 
                   {exportFormat === "jpeg" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="jpegQuality">JPEG Quality: {Math.round(jpegQuality * 100)}%</Label>
-                      <Slider
-                        id="jpegQuality"
-                        min={0.1}
-                        max={1}
-                        step={0.1}
-                        value={[jpegQuality]}
-                        onValueChange={(value) => setJpegQuality(value[0])}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">JPEG Quality: {Math.round(jpegQuality * 100)}%</span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.1"
+                        value={jpegQuality}
+                        onChange={(e) => setJpegQuality(parseFloat(e.target.value))}
+                        className="range range-primary"
                       />
                     </div>
                   )}
 
-                  <Button className="w-full" onClick={handleDownload} disabled={isDownloading}>
+                  <button
+                    className="btn btn-primary w-full"
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     {isDownloading ? "Processing..." : "Download Image"}
-                  </Button>
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Right Panel - Preview */}
           <div className="lg:col-span-2">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="p-4 bg-gray-100 border-b">
-                  <h3 className="font-medium flex items-center">
-                    <ImageIcon className="h-4 w-4 mr-2" />
-                    Preview
-                  </h3>
-                </div>
-                <div className="p-6 flex items-center justify-center bg-muted dark:bg-muted min-h-[500px]">
+            <div className="card bg-base-100 shadow-md overflow-hidden">
+              <div className="bg-base-200 p-4 border-b border-base-300">
+                <h3 className="font-medium flex items-center">
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  Preview
+                </h3>
+              </div>
+              <div className="p-6 flex items-center justify-center bg-base-200 min-h-[500px]">
+                <div
+                  ref={previewRef}
+                  className="relative overflow-hidden max-w-full max-h-full"
+                  style={{
+                    filter: `brightness(${state.brightness}) contrast(${state.contrast})`,
+                  }}
+                >
+                  <img
+                    src={image || "/placeholder.svg"}
+                    alt="Preview"
+                    className="max-w-full max-h-[70vh] object-contain"
+                  />
+                  {state.useOverlay && <div className="absolute inset-0 bg-black bg-opacity-30" />}
                   <div
-                    ref={previewRef}
-                    className="relative overflow-hidden max-w-full max-h-full"
+                    className="absolute"
                     style={{
-                      filter: `brightness(${state.brightness}) contrast(${state.contrast})`,
+                      top: `${state.position.y}%`,
+                      left: `${state.position.x}%`,
+                      transform: `translate(-50%, -50%) rotate(${state.rotation}deg)`,
+                      color: state.textColor,
+                      fontSize: `${state.fontSize}px`,
+                      fontWeight: state.fontWeight,
+                      opacity: state.opacity,
+                      backgroundColor: state.backgroundColor,
+                      padding: state.backgroundColor !== "transparent" ? "0.25em 0.5em" : "0",
+                      fontFamily:
+                        state.font === "font-montserrat"
+                          ? "Montserrat, sans-serif"
+                          : state.font === "font-roboto"
+                            ? "Roboto, sans-serif"
+                            : state.font === "font-poppins"
+                              ? "Poppins, sans-serif"
+                              : state.font === "font-playfair"
+                                ? "Playfair Display, serif"
+                                : "sans-serif",
                     }}
                   >
-                    <img
-                      src={image || "/placeholder.svg"}
-                      alt="Preview"
-                      className="max-w-full max-h-[70vh] object-contain"
-                    />
-                    {state.useOverlay && <div className="absolute inset-0 bg-black bg-opacity-30" />}
-                    <div
-                      className="absolute"
-                      style={{
-                        top: `${state.position.y}%`,
-                        left: `${state.position.x}%`,
-                        transform: `translate(-50%, -50%) rotate(${state.rotation}deg)`,
-                        color: state.textColor,
-                        fontSize: `${state.fontSize}px`,
-                        fontWeight: state.fontWeight,
-                        opacity: state.opacity,
-                        backgroundColor: state.backgroundColor,
-                        padding: state.backgroundColor !== "transparent" ? "0.25em 0.5em" : "0",
-                        fontFamily:
-                          state.font === "font-montserrat"
-                            ? "Montserrat, sans-serif"
-                            : state.font === "font-roboto"
-                              ? "Roboto, sans-serif"
-                              : state.font === "font-poppins"
-                                ? "Poppins, sans-serif"
-                                : state.font === "font-playfair"
-                                  ? "Playfair Display, serif"
-                                  : "sans-serif",
-                      }}
-                    >
-                      {state.text}
-                    </div>
+                    {state.text}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
 }
-
