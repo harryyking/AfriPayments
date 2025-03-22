@@ -16,6 +16,11 @@ import { Download, Upload, Image, Sparkles, Sliders, Type, Palette } from "lucid
 // Declare cv globally (from OpenCV.js)
 declare const cv: any;
 
+interface ImageConstructor {
+  new(): HTMLImageElement;
+  new(width: number, height: number): HTMLImageElement;
+}
+
 export default function Home() {
   const [originalImage, setOriginalImage] = useState<string>("/default-image.jpg")
   const [backgroundImage, setBackgroundImage] = useState<string>("/default-image.jpg")
@@ -63,7 +68,9 @@ export default function Home() {
     setIsProcessing(true);
     try {
       // Load the original image with explicit typing
-      const imgElement: HTMLImageElement = document.createElement('img');
+      const ImageConstructor = Image as unknown as ImageConstructor;
+      const imgElement: HTMLImageElement = new ImageConstructor();
+      
       imgElement.crossOrigin = 'anonymous';
       imgElement.src = imageSrc;
   
