@@ -91,16 +91,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
-      <Toaster position="top-center" />
+    <div className="min-h-screen bg-base-100 p-4 sm:p-6 md:p-8">
+      <Toaster position="top-right" />
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary">
             AI Background Removal Studio
             <span className="ml-2 badge badge-primary badge-sm">v1.0</span>
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Remove backgrounds effortlessly with AI-powered technology
           </p>
         </div>
@@ -111,12 +111,12 @@ export default function Home() {
             {/* Upload Section */}
             <div className="card bg-white shadow-md p-6">
               <h2 className="text-lg font-medium flex items-center mb-4">
-                <Upload className="h-5 w-5 mr-2 text-blue-500" />
+                <Upload className="h-5 w-5 mr-2 text-primary" />
                 Upload Image
               </h2>
               {isProcessing ? (
                 <div className="text-center py-4">
-                  <span className="loading loading-spinner loading-lg text-blue-500"></span>
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
                   <p className="mt-2 text-gray-600">Processing image...</p>
                 </div>
               ) : (
@@ -127,7 +127,7 @@ export default function Home() {
             {/* Export Options */}
             <div className="card bg-white shadow-md p-6">
               <h2 className="text-lg font-medium flex items-center mb-4">
-                <Download className="h-5 w-5 mr-2 text-blue-500" />
+                <Download className="h-5 w-5 mr-2 text-primary" />
                 Export Options
               </h2>
               <div className="space-y-4">
@@ -192,13 +192,13 @@ export default function Home() {
           {/* Preview */}
           <div className="card bg-white shadow-md p-6">
             <h2 className="text-lg font-medium flex items-center mb-4">
-              <Image className="h-5 w-5 mr-2 text-blue-500" />
+              <Image className="h-5 w-5 mr-2" />
               Preview
             </h2>
             <div className="min-h-[300px] flex items-center justify-center">
               {isProcessing ? (
                 <div className="text-center">
-                  <span className="loading loading-spinner loading-lg text-blue-500"></span>
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
                   <p className="mt-2 text-gray-600">Processing your image...</p>
                 </div>
               ) : (
@@ -217,7 +217,7 @@ export default function Home() {
           <p>
             Powered by{" "}
             <a
-              href="https://www.remove.bg"
+              href="https://www.remove.bg/r/Syi2ZoboQeB7sk4CpiqLdpU2"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline"
