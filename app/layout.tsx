@@ -11,9 +11,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <Head>
-      <script src="https://docs.opencv.org/4.5.5/opencv.js" async></script>
-      </Head>
       <body>
         {children}
         <Toaster position="top-right" />
