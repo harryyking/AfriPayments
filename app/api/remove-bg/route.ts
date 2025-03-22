@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
     }
 
-    // Call remove.bg API
     const response = await fetch("https://api.remove.bg/v1.0/removebg", {
       method: "POST",
       headers: {
@@ -22,21 +21,18 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      return NextResponse.json(
-        { error: errorData.errors?.[0]?.title || "Failed to remove background" },
-        { status: response.status }
-      );
+      const errorText = await response.text();
+      throw new Error(`remove.bg API error: ${errorText}`);
     }
 
-    // Convert the response to base64 to avoid CORS issues
-    const imageBuffer = await response.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString("base64");
-    const dataUrl = `data:image/png;base64,${base64Image}`;
+    const resultBuffer = await response.arrayBuffer();
+    const resultBase64 = Buffer.from(resultBuffer).toString("base64");
+    const dataUrl = `data:image/png;base64,${resultBase64}`;
 
     return NextResponse.json({ result: dataUrl });
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Internal server error";
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

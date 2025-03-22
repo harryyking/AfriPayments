@@ -1,42 +1,37 @@
-import { Upload } from "lucide-react";
+import { useState } from "react";
+import { UploadDropzone } from "@/lib/uploadthing";
+import { toast } from "react-hot-toast";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 interface ImageUploaderProps {
-  onImageChange: (image: string) => void;
+  onImageChange: (url: string) => void;
   disabled: boolean;
 }
 
 export default function ImageUploader({ onImageChange, disabled }: ImageUploaderProps) {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        alert("Please upload a valid image file");
-        return;
-      }
-      // Validate file size (e.g., max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size exceeds 5MB limit");
-        return;
-      }
-      const imageUrl = URL.createObjectURL(file);
-      onImageChange(imageUrl);
-    }
-  };
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <div className="relative">
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="file-input file-input-bordered w-full"
-        disabled={disabled}
-        aria-label="Upload an image"
+      <UploadDropzone
+        endpoint="imageUploader"
+        onClientUploadComplete={(res) => {
+          if (res && res[0]) {
+            onImageChange(res[0].url);
+            setIsUploading(false);
+          }
+        }}
+        onUploadError={(error) => {
+          toast.error(`Upload failed: ${error.message}`);
+          setIsUploading(false);
+        }}
+        onUploadBegin={() => setIsUploading(true)}
+        disabled={disabled || isUploading}
+        className="ut-button:bg-blue-500 ut-button:hover:bg-blue-600 ut-label:text-gray-700"
       />
-      {disabled && (
+      {(disabled || isUploading) && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50 rounded-lg">
-          <span className="text-gray-500">Processing...</span>
+          <span className="text-gray-500">{isUploading ? "Uploading..." : "Processing..."}</span>
         </div>
       )}
     </div>

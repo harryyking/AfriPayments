@@ -1,4 +1,4 @@
-'use client';
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface UndoRedoProps {
   undo: () => void;
@@ -9,27 +9,21 @@ interface UndoRedoProps {
 
 export default function UndoRedo({ undo, redo, canUndo, canRedo }: UndoRedoProps) {
   return (
-    <div className="flex justify-center gap-4 mb-6">
+    <div className="flex gap-2">
       <button
+        className="btn btn-outline btn-sm"
         onClick={undo}
         disabled={!canUndo}
-        className={`py-2 px-4 rounded transition ${
-          canUndo
-            ? 'bg-gray-500 text-white hover:bg-gray-600'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        }`}
       >
+        <ArrowLeft className="h-4 w-4 mr-2" />
         Undo
       </button>
       <button
+        className="btn btn-outline btn-sm"
         onClick={redo}
         disabled={!canRedo}
-        className={`py-2 px-4 rounded transition ${
-          canRedo
-            ? 'bg-gray-500 text-white hover:bg-gray-600'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        }`}
       >
+        <ArrowRight className="h-4 w-4 mr-2" />
         Redo
       </button>
     </div>

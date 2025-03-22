@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import '@/styles/globals.css';
-import Head from 'next/head'
+import { League_Spartan } from 'next/font/google';
+import Provider from '@/components/Provider';
 
+const brandFont = League_Spartan({subsets: ["latin"]})
 export const metadata: Metadata = {
   title: 'Text Overlay Tool',
   description: 'A free tool to overlay text on images with customizable styles.',
@@ -10,10 +12,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="emerald">
-      <body>
+    <html lang="en" >
+      <body className={brandFont.className} data-theme="emerald">
+        <Provider>
+
         {children}
         <Toaster position="top-right" />
+        </Provider>
       </body>
     </html>
   );
