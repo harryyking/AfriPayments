@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { signOut, useSession } from "next-auth/react"
 import html2canvas from "html2canvas"
 import { Toaster, toast } from "react-hot-toast"
@@ -39,6 +39,8 @@ export default function Dashboard() {
   const [jpegQuality, setJpegQuality] = useState<number>(0.8)
   const [activeTab, setActiveTab] = useState<string>("upload")
   const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
+  const [imageCount, setImageCount] = useState<number>(0);
+  const [isPaid, setIsPaid] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null)
 
   // Text state with undo/redo
@@ -58,72 +60,101 @@ export default function Dashboard() {
   }
   const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState)
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) return;
+
+      try {
+        const data = await fetch(`/api/images?userId=${userId}`).then(res => res.json());
+        setImageCount(data.images.length);
+        setIsPaid(data.onPaid);
+      } catch (error) {
+        toast.error("Failed to fetch user data");
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  // Check if user can process more images
+  const canProcessImage = isPaid || imageCount < 3;
+
   // Process image using remove.bg API via backend proxy
   const processImage = async (imageUrl: string) => {
-    setIsProcessing(true)
+    if (!canProcessImage) {
+      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
+      return;
+    }
+
+    setIsProcessing(true);
     try {
-      if (!imageUrl) throw new Error("No image uploaded")
+      if (!imageUrl) throw new Error("No image uploaded");
 
       const response = await fetch("/api/remove-bg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to remove background")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to remove background");
       }
 
-      const data = await response.json()
-      const processedImageUrl = data.result
+      const data = await response.json();
+      const processedImageUrl = data.result;
 
       // Store the processed image in the database
       if (userId) {
-        await prisma.behindImage.create({
-          data: {
-            imageUrl: processedImageUrl,
-            userid: userId,
-          },
-        })
+        await fetch("/api/images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: processedImageUrl, userId }),
+        });
+        setImageCount((prev) => prev + 1);
       }
 
-      setSubjectImage(processedImageUrl)
-      toast.success("Background removed successfully")
+      setSubjectImage(processedImageUrl);
+      toast.success("Background removed successfully");
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
-      toast.error(`Error: ${errorMessage}`)
-      setSubjectImage(null)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${errorMessage}`);
+      setSubjectImage(null);
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   // Handle image upload via UploadThing
   const handleImageChange = (url: string) => {
-    setImageUrl(url)
-    setBackgroundImage(url)
-    setSubjectImage(null)
-    processImage(url)
-  }
+    setImageUrl(url);
+    setBackgroundImage(url);
+    setSubjectImage(null);
+    processImage(url);
+  };
 
   // Download the final image
   const handleDownload = async () => {
-    try {
-      if (!previewRef.current) throw new Error("Preview not available")
-      const canvas = await html2canvas(previewRef.current, { useCORS: true })
-      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png"
-      const quality = exportFormat === "jpeg" ? jpegQuality : undefined
-      const link = document.createElement("a")
-      link.href = canvas.toDataURL(format, quality)
-      link.download = `${fileName}.${exportFormat}`
-      link.click()
-      toast.success("Image downloaded successfully")
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
-      toast.error(`Download failed: ${errorMessage}`)
+    if (!canProcessImage) {
+      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
+      return;
     }
-  }
+
+    try {
+      if (!previewRef.current) throw new Error("Preview not available");
+      const canvas = await html2canvas(previewRef.current, { useCORS: true });
+      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
+      const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL(format, quality);
+      link.download = `${fileName}.${exportFormat}`;
+      link.click();
+      toast.success("Image downloaded successfully");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Download failed: ${errorMessage}`);
+    }
+  };
 
   // Apply preset
   const applyPreset = (preset: Preset) => {
@@ -136,11 +167,20 @@ export default function Dashboard() {
       rotation: preset.rotation,
       opacity: preset.opacity,
       backgroundColor: preset.backgroundColor,
-    }
-    addToHistory(newState)
-    toast.success("Preset applied")
+    };
+    addToHistory(newState);
+    toast.success("Preset applied");
+  };
+
+  if (status === "loading") {
+    console.log("Dashboard: Session status is loading");
+    return <div className="text-center p-4">Loading...</div>;
   }
 
+  if (!session) {
+    console.log("Dashboard: No session, user not authenticated");
+    return <div className="text-center p-4">Please sign in to access the dashboard.</div>;
+  }
   return (
     <div className="min-h-screen bg-base-200">
       <Toaster position="top-center" />
