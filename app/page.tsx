@@ -63,7 +63,7 @@ export default function Home() {
     setIsProcessing(true);
     try {
       // Load the original image with explicit typing
-      const imgElement: HTMLImageElement = new Image();
+      const imgElement: HTMLImageElement = document.createElement('img');
       imgElement.crossOrigin = 'anonymous';
       imgElement.src = imageSrc;
   

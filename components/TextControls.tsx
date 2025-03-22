@@ -3,6 +3,7 @@
 import { SketchPicker } from 'react-color';
 import { fontOptions } from '../lib/font';
 import { TextState } from '../types';
+import toast from 'react-hot-toast';
 
 interface TextControlsProps {
   text: string;
@@ -60,6 +61,23 @@ export default function TextControls({
   addToHistory,
 }: TextControlsProps) {
   const handleChange = <K extends keyof TextState>(key: K, value: TextState[K]) => {
+    console.log(`Updating ${key} to:`, value);
+
+    if (
+      (key === 'fontSize' || key === 'rotation' || key === 'opacity' || key === 'brightness' || key === 'contrast') &&
+      (typeof value !== 'number' || isNaN(value))
+    ) {
+      console.error(`Invalid value for ${key}:`, value);
+      toast.error(`Invalid value for ${key}. Please try again.`);
+      return;
+    }
+
+    if (key === 'position' && (typeof value !== 'object' || !('x' in value) || !('y' in value))) {
+      console.error('Invalid position value:', value);
+      toast.error('Invalid position value. Please try again.');
+      return;
+    }
+
     const newState: TextState = {
       text,
       textColor,
@@ -75,52 +93,57 @@ export default function TextControls({
       contrast,
       [key]: value,
     };
-    addToHistory(newState);
-    switch (key) {
-      case 'text':
-        setText(value as string);
-        break;
-      case 'textColor':
-        setTextColor(value as string);
-        break;
-      case 'fontSize':
-        setFontSize(value as number);
-        break;
-      case 'fontWeight':
-        setFontWeight(value as string);
-        break;
-      case 'font':
-        setFont(value as string);
-        break;
-      case 'position':
-        setPosition(value as { x: number; y: number });
-        break;
-      case 'rotation':
-        setRotation(value as number);
-        break;
-      case 'opacity':
-        setOpacity(value as number);
-        break;
-      case 'backgroundColor':
-        setBackgroundColor(value as string);
-        break;
-      case 'useOverlay':
-        setUseOverlay(value as boolean);
-        break;
-      case 'brightness':
-        setBrightness(value as number);
-        break;
-      case 'contrast':
-        setContrast(value as number);
-        break;
-      default:
-        break;
+    try {
+      addToHistory(newState);
+      switch (key) {
+        case 'text':
+          setText(value as string);
+          break;
+        case 'textColor':
+          setTextColor(value as string);
+          break;
+        case 'fontSize':
+          setFontSize(value as number);
+          break;
+        case 'fontWeight':
+          setFontWeight(value as string);
+          break;
+        case 'font':
+          setFont(value as string);
+          break;
+        case 'position':
+          setPosition(value as { x: number; y: number });
+          break;
+        case 'rotation':
+          setRotation(value as number);
+          break;
+        case 'opacity':
+          setOpacity(value as number);
+          break;
+        case 'backgroundColor':
+          setBackgroundColor(value as string);
+          break;
+        case 'useOverlay':
+          setUseOverlay(value as boolean);
+          break;
+        case 'brightness':
+          setBrightness(value as number);
+          break;
+        case 'contrast':
+          setContrast(value as number);
+          break;
+        default:
+          break;
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`Error updating ${key}:`, errorMessage);
+      toast.error(`Failed to update ${key}: ${errorMessage}`);
     }
   };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-      {/* Text Input */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Text:</label>
         <input
@@ -132,22 +155,23 @@ export default function TextControls({
           aria-label="Text to overlay"
         />
       </div>
-
-      {/* Font Size */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Font Size: {fontSize}px</label>
         <input
           type="range"
           min="20"
           max="120"
-          value={fontSize}
-          onChange={(e) => handleChange('fontSize', Number(e.target.value))}
+          value={fontSize || 20}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('fontSize', newValue);
+            }
+          }}
           className="w-48"
           aria-label="Font size"
         />
       </div>
-
-      {/* Font Weight */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Font Weight:</label>
         <select
@@ -160,8 +184,6 @@ export default function TextControls({
           <option value="700">Bold</option>
         </select>
       </div>
-
-      {/* Font Family */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Font:</label>
         <select
@@ -177,63 +199,64 @@ export default function TextControls({
           ))}
         </select>
       </div>
-
-      {/* Text Color */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Text Color:</label>
         <SketchPicker
-          color={textColor}
+          color={textColor || '#000000'}
           onChangeComplete={(color) => handleChange('textColor', color.hex)}
         />
       </div>
-
-      {/* Position X */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Position X:</label>
         <input
           type="range"
           min="0"
           max="100"
-          value={position.x}
-          onChange={(e) =>
-            handleChange('position', { ...position, x: Number(e.target.value) })
-          }
+          value={position.x || 0}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('position', { ...position, x: newValue });
+            }
+          }}
           className="w-48"
           aria-label="Text position X"
         />
       </div>
-
-      {/* Position Y */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Position Y:</label>
         <input
           type="range"
           min="0"
           max="100"
-          value={position.y}
-          onChange={(e) =>
-            handleChange('position', { ...position, y: Number(e.target.value) })
-          }
+          value={position.y || 0}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('position', { ...position, y: newValue });
+            }
+          }}
           className="w-48"
           aria-label="Text position Y"
         />
       </div>
-
-      {/* Rotation */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Rotation: {rotation}°</label>
         <input
           type="range"
           min="0"
           max="360"
-          value={rotation}
-          onChange={(e) => handleChange('rotation', Number(e.target.value))}
+          value={rotation || 0}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('rotation', newValue);
+            }
+          }}
           className="w-48"
           aria-label="Text rotation"
         />
       </div>
-
-      {/* Opacity */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Opacity: {opacity}</label>
         <input
@@ -242,22 +265,23 @@ export default function TextControls({
           max="1"
           step="0.1"
           value={opacity}
-          onChange={(e) => handleChange('opacity', Number(e.target.value))}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('opacity', newValue);
+            }
+          }}
           className="w-48"
           aria-label="Text opacity"
         />
       </div>
-
-      {/* Background Color */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Background Color:</label>
         <SketchPicker
-          color={backgroundColor}
+          color={backgroundColor || 'transparent'}
           onChangeComplete={(color) => handleChange('backgroundColor', color.hex)}
         />
       </div>
-
-      {/* Overlay Toggle */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Use Overlay:</label>
         <input
@@ -268,8 +292,6 @@ export default function TextControls({
           aria-label="Toggle overlay"
         />
       </div>
-
-      {/* Brightness */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Brightness: {brightness}</label>
         <input
@@ -277,14 +299,17 @@ export default function TextControls({
           min="0"
           max="2"
           step="0.1"
-          value={brightness}
-          onChange={(e) => handleChange('brightness', Number(e.target.value))}
+          value={brightness || 1}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('brightness', newValue);
+            }
+          }}
           className="w-48"
           aria-label="Image brightness"
         />
       </div>
-
-      {/* Contrast */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-1">Contrast: {contrast}</label>
         <input
@@ -292,8 +317,13 @@ export default function TextControls({
           min="0"
           max="2"
           step="0.1"
-          value={contrast}
-          onChange={(e) => handleChange('contrast', Number(e.target.value))}
+          value={contrast || 1}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            if (!isNaN(newValue)) {
+              handleChange('contrast', newValue);
+            }
+          }}
           className="w-48"
           aria-label="Image contrast"
         />
