@@ -28,7 +28,7 @@ import type { TextState, Preset } from "@/types"
 import prisma from "@/lib/db"
 
 export default function Dashboard() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const userId = session?.user?.email
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
