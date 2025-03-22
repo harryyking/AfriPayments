@@ -49,6 +49,12 @@ export const authOptions: NextAuthOptions = {
           return true;
           },
           
+           // Optionally, you can add the session callback to pass more info to the client
+           async session({ session, user }) {
+            // Add user info to the session object
+            session.user.id = user.id;
+            return session;
+          },
 
 
         },

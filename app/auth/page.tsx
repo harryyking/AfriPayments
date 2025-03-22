@@ -26,10 +26,10 @@ const Register = () => {
   
 
   return (
-    <div className="min-h-screen w-full bg-base-200 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-base-200 flex flex-col items-center justify-center p-4">
       
 
-        <div className="card border shadow-sm p-4">
+        <div className="card border bg-white shadow-sm p-4">
             <div className=" card-title text-xl">Sign in</div>
 
             <div className='card-actions'>
@@ -71,7 +71,7 @@ const Register = () => {
             </div>
           </div>
           
-          <div className="flex flex-col text-center text-sm text-gray-500">
+          <div className=" text-center text-sm text-gray-500">
             <p>
               By signing in, you agree to our{' '}
               <a href="/terms-of-service" className="text-primary underline">
