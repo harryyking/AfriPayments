@@ -9,7 +9,9 @@ export default function AuthPage() {
   const router = useRouter();
 
   if (status === "loading") {
-    return <div className="text-center p-4 min-h-screen">Loading...</div>;
+    return <div className="text-center p-4 min-h-screen">
+      <span className="loading loading-spinner loading-md"></span>
+    </div>;
   }
 
   if (session) {
