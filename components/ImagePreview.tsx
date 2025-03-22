@@ -26,6 +26,11 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
     objectFit: "cover",
   };
 
+  const backgroundImageStyle: React.CSSProperties = {
+    ...imageStyle,
+    zIndex: 1, // Bottom layer
+  };
+
   const textStyle: React.CSSProperties = {
     position: "absolute",
     top: `${textState.position.y}%`,
@@ -39,6 +44,12 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
     padding: "10px",
     textAlign: "center",
     whiteSpace: "nowrap",
+    zIndex: 2, // Middle layer
+  };
+
+  const subjectImageStyle: React.CSSProperties = {
+    ...imageStyle,
+    zIndex: 3, // Top layer
   };
 
   return (
@@ -47,28 +58,28 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
         <img
           src={backgroundImage}
           alt="Background"
-          style={imageStyle}
+          style={backgroundImageStyle}
           crossOrigin="anonymous"
           onError={() => toast.error("Failed to load background image")}
         />
       ) : (
-        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+        <div className="absolute inset-0 flex items-center justify-center text-gray-500" style={{ zIndex: 1 }}>
           No image uploaded
+        </div>
+      )}
+      {textState.text && (
+        <div style={textStyle} className={textState.font}>
+          {textState.text}
         </div>
       )}
       {subjectImage && (
         <img
           src={subjectImage}
           alt="Subject"
-          style={imageStyle}
+          style={subjectImageStyle}
           crossOrigin="anonymous"
           onError={() => toast.error("Failed to load subject image")}
         />
-      )}
-      {textState.text && (
-        <div style={textStyle} className={textState.font}>
-          {textState.text}
-        </div>
       )}
     </div>
   );
