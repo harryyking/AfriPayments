@@ -1,6 +1,5 @@
 "use client"; // Error components must be Client Components
 
-import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -27,15 +26,16 @@ export default function Error({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Button
+        <button 
+        className="btn btn-primary"
           onClick={
             // Attempt to recover by trying to re-render the segment
             () => reset()
           }
         >
           Reload page
-        </Button>
-        <Link href="/" className={buttonVariants({})}>
+        </button>
+        <Link href="/" className="btn btn-outline">
           Back to homepage
         </Link>
       </div>
