@@ -342,10 +342,21 @@ const handleDownload = async () => {
                           />
                         </div>
                       )}
-                      <button className="btn btn-primary w-full" onClick={handleDownload} disabled={isProcessing}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Image
-                      </button>
+                       {isPaid || imageCount < 3 ? (
+                  <button
+                    className="btn btn-primary w-full mt-4"
+                    onClick={handleDownload}
+                    disabled={isProcessing}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Image
+                  </button>
+                ) : (
+                  <button className="btn btn-primary w-full mt-4" disabled>
+                    <Download className="h-4 w-4 mr-2" />
+                    Pay to Download
+                  </button>
+                )}
                     </div>
                   </div>
                 </div>

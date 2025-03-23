@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     const newImage = await prisma.behindImage.create({
       data: {
         imageUrl,
-        userid: userId,
+        userid: userId!,
       },
     });
 

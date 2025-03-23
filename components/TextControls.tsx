@@ -43,9 +43,6 @@ export default function TextControls({
 
   return (
     <div className="card bg-white shadow-md p-6">
-      <h2 className="text-lg font-medium flex items-center mb-4">
-        <span className="h-5 w-5 mr-2 text-blue-500">Text Settings</span>
-      </h2>
       <div className="space-y-4">
         <div className="form-control">
           <label className="label">
@@ -112,7 +109,7 @@ export default function TextControls({
             onChange={(e) => setFont(e.target.value)}
           >
             {fontOptions.map((fontOption) => (
-              <option key={fontOption.value} value={fontOption.value}>
+              <option key={fontOption.value} value={fontOption.fontObject.className}>
                 {fontOption.name}
               </option>
             ))}
