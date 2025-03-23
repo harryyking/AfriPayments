@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { signOut, useSession } from "next-auth/react"
-import html2canvas from "html2canvas"
-import { Toaster, toast } from "react-hot-toast"
+import { useState, useRef, useEffect } from "react";
+import { signOut, useSession } from "next-auth/react";
+import html2canvas from "html2canvas-pro"; // Updated import
+import { Toaster, toast } from "react-hot-toast";
 import {
   Download,
   Upload,
@@ -16,33 +16,31 @@ import {
   History,
   ChevronDown,
   Save,
-} from "lucide-react"
-import ImageUploader from "@/components/ImageUploader"
-import ImagePreview from "@/components/ImagePreview"
-import TextControls from "@/components/TextControls"
-import Presets from "@/components/Presets"
-import UndoRedo from "@/components/UndoRedo"
-import ImageGallery from "@/components/ImageGallery"
-import { useHistory } from "@/lib/useHistory"
-import type { TextState, Preset } from "@/types"
-
-
+} from "lucide-react";
+import ImageUploader from "@/components/ImageUploader";
+import ImagePreview from "@/components/ImagePreview";
+import TextControls from "@/components/TextControls";
+import Presets from "@/components/Presets";
+import UndoRedo from "@/components/UndoRedo";
+import ImageGallery from "@/components/ImageGallery";
+import { useHistory } from "@/lib/useHistory";
+import type { TextState, Preset } from "@/types";
 
 export default function ClientDashboard() {
-  const { data: session, status } = useSession()
-  const userId = session?.user?.email
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
-  const [subjectImage, setSubjectImage] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState<boolean>(false)
-  const [fileName, setFileName] = useState<string>("edited-image")
-  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png")
-  const [jpegQuality, setJpegQuality] = useState<number>(0.8)
-  const [activeTab, setActiveTab] = useState<string>("upload")
-  const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
+  const { data: session, status } = useSession();
+  const userId = session?.user?.email;
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [subjectImage, setSubjectImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>("edited-image");
+  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png");
+  const [jpegQuality, setJpegQuality] = useState<number>(0.8);
+  const [activeTab, setActiveTab] = useState<string>("upload");
+  const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
   const [imageCount, setImageCount] = useState<number>(0);
   const [isPaid, setIsPaid] = useState<boolean>(false);
-  const previewRef = useRef<HTMLDivElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null);
 
   // Text state with undo/redo
   const initialTextState: TextState = {
@@ -58,15 +56,15 @@ export default function ClientDashboard() {
     useOverlay: false,
     brightness: 0,
     contrast: 0,
-  }
-  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState)
+  };
+  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState);
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userId) return;
 
       try {
-        const data = await fetch(`/api/images?userId=${userId}`).then(res => res.json());
+        const data = await fetch(`/api/images?userId=${userId}`).then((res) => res.json());
         setImageCount(data.images.length);
         setIsPaid(data.onPaid);
       } catch (error) {
@@ -135,28 +133,28 @@ export default function ClientDashboard() {
   };
 
   // Download the final image
-const handleDownload = async () => {
-  if (!canProcessImage) {
-    toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
-    return;
-  }
+  const handleDownload = async () => {
+    if (!canProcessImage) {
+      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
+      return;
+    }
 
-  try {
-    if (!previewRef.current) throw new Error("Preview not available");
-    const canvas = await html2canvas(previewRef.current, { useCORS: true });
-    const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
-    const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL(format, quality);
-    link.download = `${fileName}.${exportFormat}`;
-    link.click();
-    toast.success("Image downloaded successfully");
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("Download error:", error);
-    toast.error(`Download failed: ${errorMessage}`);
-  }
-};
+    try {
+      if (!previewRef.current) throw new Error("Preview not available");
+      const canvas = await html2canvas(previewRef.current, { useCORS: true }); // Using html2canvas-pro
+      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
+      const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL(format, quality);
+      link.download = `${fileName}.${exportFormat}`;
+      link.click();
+      toast.success("Image downloaded successfully");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Download error:", error);
+      toast.error(`Download failed: ${errorMessage}`);
+    }
+  };
 
   // Apply preset
   const applyPreset = (preset: Preset) => {
@@ -176,19 +174,24 @@ const handleDownload = async () => {
 
   if (status === "loading") {
     console.log("Dashboard: Session status is loading");
-    return <div className="flex items-center justify-center p-4 min-h-screen">
-      <span className="text-center">Loading...</span></div>;
+    return (
+      <div className="flex items-center justify-center p-4 min-h-screen">
+        <span className="text-center">Loading...</span>
+      </div>
+    );
   }
 
   if (!session) {
     console.log("Dashboard: No session, user not authenticated");
-    return <div className="flex justify-center items-center p-4 min-h-screen">
-      <span className="text-center">Please sign in to access the dashboard.</span>
-      </div>;
+    return (
+      <div className="flex justify-center items-center p-4 min-h-screen">
+        <span className="text-center">Please sign in to access the dashboard.</span>
+      </div>
+    );
   }
+
   return (
     <div className="min-h-screen bg-base-200">
-
       {/* Navbar */}
       <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
@@ -342,21 +345,21 @@ const handleDownload = async () => {
                           />
                         </div>
                       )}
-                       {isPaid || imageCount < 3 ? (
-                  <button
-                    className="btn btn-primary w-full mt-4"
-                    onClick={handleDownload}
-                    disabled={isProcessing}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Image
-                  </button>
-                ) : (
-                  <button className="btn btn-primary w-full mt-4" disabled>
-                    <Download className="h-4 w-4 mr-2" />
-                    Pay to Download
-                  </button>
-                )}
+                      {isPaid || imageCount < 3 ? (
+                        <button
+                          className="btn btn-primary w-full mt-4"
+                          onClick={handleDownload}
+                          disabled={isProcessing}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download Image
+                        </button>
+                      ) : (
+                        <button className="btn btn-primary w-full mt-4" disabled>
+                          <Download className="h-4 w-4 mr-2" />
+                          Pay to Download
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -523,9 +526,9 @@ const handleDownload = async () => {
                     <ImageGallery
                       userId={userId}
                       onSelectImage={(url) => {
-                        setBackgroundImage(url)
-                        setSubjectImage(url)
-                        setActiveTab("upload")
+                        setBackgroundImage(url);
+                        setSubjectImage(url);
+                        setActiveTab("upload");
                       }}
                     />
                   </div>
@@ -591,6 +594,5 @@ const handleDownload = async () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

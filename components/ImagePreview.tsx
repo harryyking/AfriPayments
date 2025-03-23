@@ -5,7 +5,6 @@ import type { TextState } from "../types";
 import { toast } from "react-hot-toast";
 import { ImageIcon } from "lucide-react";
 import { useState, useEffect } from "react";
-import { convertColorToHex } from "@/lib/colorUtils";
 
 interface ImagePreviewProps {
   backgroundImage: string | null;
@@ -53,8 +52,8 @@ export default function ImagePreview({
     zIndex: 1,
   };
 
-  const computedTextColor = convertColorToHex(textState.textColor);
-  const computedBgColor = convertColorToHex(textState.backgroundColor);
+  const computedTextColor = textState.textColor;
+  const computedBgColor = textState.backgroundColor;
 
   useEffect(() => {
     if (computedTextColor === "#000000" && textState.textColor !== "#000000" && textState.textColor !== "black") {
