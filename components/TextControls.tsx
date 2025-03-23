@@ -85,17 +85,18 @@ export default function TextControls({
           <label className="label">
             <span className="label-text font-medium">Font Weight</span>
           </label>
-          <input
-          type="range"
-          max= "900"
-          min="100"
-          step="1"
-            className="range range-primary"
+          <select
+            className="select select-bordered w-full"
             value={fontWeight}
             onChange={(e) => setFontWeight(e.target.value)}
             disabled={availableWeights.length <= 1} // Disable if only one weight is available
-          />
-            
+          >
+            {availableWeights.map((weight) => (
+              <option key={weight} value={weight}>
+                {weight === "400" ? "Normal" : weight === "700" ? "Bold" : weight}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-control">
           <label className="label">
