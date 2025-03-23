@@ -16,12 +16,12 @@ export async function GET(request: NextRequest) {
     }
 
     const images = await prisma.behindImage.findMany({
-      where: { userid: userId! },
+      where: { user: {email: userId!} },
       orderBy: { createdAt: "desc" },
     });
 
     const user = await prisma.user.findUnique({
-      where: { id: userId! },
+      where: { email: userId! },
       select: { onPaid: true },
     });
 

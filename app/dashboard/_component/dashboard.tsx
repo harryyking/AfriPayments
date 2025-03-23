@@ -135,27 +135,28 @@ export default function ClientDashboard() {
   };
 
   // Download the final image
-  const handleDownload = async () => {
-    if (!canProcessImage) {
-      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
-      return;
-    }
+const handleDownload = async () => {
+  if (!canProcessImage) {
+    toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
+    return;
+  }
 
-    try {
-      if (!previewRef.current) throw new Error("Preview not available");
-      const canvas = await html2canvas(previewRef.current, { useCORS: true });
-      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
-      const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL(format, quality);
-      link.download = `${fileName}.${exportFormat}`;
-      link.click();
-      toast.success("Image downloaded successfully");
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Download failed: ${errorMessage}`);
-    }
-  };
+  try {
+    if (!previewRef.current) throw new Error("Preview not available");
+    const canvas = await html2canvas(previewRef.current, { useCORS: true });
+    const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
+    const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL(format, quality);
+    link.download = `${fileName}.${exportFormat}`;
+    link.click();
+    toast.success("Image downloaded successfully");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Download error:", error);
+    toast.error(`Download failed: ${errorMessage}`);
+  }
+};
 
   // Apply preset
   const applyPreset = (preset: Preset) => {
@@ -175,16 +176,18 @@ export default function ClientDashboard() {
 
   if (status === "loading") {
     console.log("Dashboard: Session status is loading");
-    return <div className="text-center p-4">Loading...</div>;
+    return <div className="flex items-center justify-center p-4 min-h-screen">
+      <span className="text-center">Loading...</span></div>;
   }
 
   if (!session) {
     console.log("Dashboard: No session, user not authenticated");
-    return <div className="text-center p-4">Please sign in to access the dashboard.</div>;
+    return <div className="flex justify-center items-center p-4 min-h-screen">
+      <span className="text-center">Please sign in to access the dashboard.</span>
+      </div>;
   }
   return (
     <div className="min-h-screen bg-base-200">
-      <Toaster position="top-center" />
 
       {/* Navbar */}
       <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">

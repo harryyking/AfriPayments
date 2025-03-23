@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { UploadDropzone } from "@/lib/uploadthing";
 import { toast } from "react-hot-toast";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 interface ImageUploaderProps {
   onImageChange: (url: string) => void;
