@@ -7,7 +7,7 @@ import { fontOptions } from '@/lib/font';
 
 const brandFont = League_Spartan({subsets: ["latin"]})
 export const metadata: Metadata = {
-  title: 'Text Overlay Tool',
+  title: 'TextVeil',
   description: 'A free tool to overlay text on images with customizable styles.',
 };
 
