@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" >
       <body className={brandFont.className} data-theme="emerald">
         <Provider>
-          <div className={fontOptions.map(font => font.fontObject.className).join(" ")}>
+          <div>
             {children}
 
           </div>
