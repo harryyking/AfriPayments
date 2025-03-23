@@ -4,7 +4,7 @@ import type React from "react";
 import type { TextState } from "../types";
 import { toast } from "react-hot-toast";
 import { ImageIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { convertColorToHex } from "@/lib/colorUtils";
 
 interface ImagePreviewProps {
@@ -12,36 +12,31 @@ interface ImagePreviewProps {
   subjectImage: string | null;
   textState: TextState;
   previewRef: React.RefObject<HTMLDivElement | null>;
+  aspectRatio?: "1:1" | "4:3"; // Optional prop to choose aspect ratio
 }
 
-export default function ImagePreview({ backgroundImage, subjectImage, textState, previewRef }: ImagePreviewProps) {
+export default function ImagePreview({
+  backgroundImage,
+  subjectImage,
+  textState,
+  previewRef,
+  aspectRatio = "1:1", // Default to 1:1 (square)
+}: ImagePreviewProps) {
   const [isLoading, setIsLoading] = useState({
     background: !!backgroundImage,
     subject: !!subjectImage,
   });
-  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
 
-  // Load background image dimensions dynamically
-  useEffect(() => {
-    if (backgroundImage) {
-      const img = new Image();
-      img.src = backgroundImage;
-      img.onload = () => {
-        setImageDimensions({ width: img.width, height: img.height });
-        setIsLoading((prev) => ({ ...prev, background: false }));
-      };
-      img.onerror = () => {
-        toast.error("Failed to load background image");
-        setIsLoading((prev) => ({ ...prev, background: false }));
-      };
-    }
-  }, [backgroundImage]);
+  // Define aspect ratio in percentage (padding-top)
+  const aspectRatioMap = {
+    "1:1": "100%", // Square
+    "4:3": "75%",  // 3/4 = 75%
+  };
 
   const containerStyle: React.CSSProperties = {
     position: "relative",
     width: "100%",
-    height: imageDimensions ? `${(imageDimensions.height / imageDimensions.width) * 100}%` : "auto", // Dynamic height based on image
-    maxWidth: "100%", // Ensure it fits within parent
+    paddingTop: aspectRatioMap[aspectRatio], // Set aspect ratio
     overflow: "hidden",
   };
 
@@ -102,6 +97,7 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
               alt="Background"
               style={backgroundImageStyle}
               crossOrigin="anonymous"
+              onLoad={() => setIsLoading((prev) => ({ ...prev, background: false }))}
               onError={() => {
                 toast.error("Failed to load background image");
                 setIsLoading((prev) => ({ ...prev, background: false }));
@@ -110,7 +106,7 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
             />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center bg-base-300 bg-opacity-50 p-4" style={{ width: "100%", height: "300px" }}>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-300 bg-opacity-50 z-1">
             <ImageIcon size={48} className="text-base-content opacity-20 mb-2" />
             <p className="text-base-content opacity-60 text-center px-4">No background image uploaded</p>
           </div>
@@ -149,9 +145,7 @@ export default function ImagePreview({ backgroundImage, subjectImage, textState,
 
       {/* Image info */}
       <div className="mt-2 text-xs text-base-content/60 text-center">
-        {backgroundImage && imageDimensions
-          ? `${imageDimensions.width}x${imageDimensions.height} full image preview`
-          : "Upload an image to see preview"}
+        {backgroundImage && `${aspectRatio} aspect ratio preview`}
       </div>
     </div>
   );
