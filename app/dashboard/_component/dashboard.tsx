@@ -23,7 +23,7 @@ import TextControls from "@/components/TextControls";
 import Presets from "@/components/Presets";
 import UndoRedo from "@/components/UndoRedo";
 import ImageGallery from "@/components/ImageGallery";
-import PaystackButton from "@/components/PaystackButton"; // Add this import
+import PaystackButton from "@/components/PaystackButton"; // Added PaystackButton import
 import { useHistory } from "@/lib/useHistory";
 import type { TextState, Preset } from "@/types";
 
@@ -42,6 +42,7 @@ export default function ClientDashboard() {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  // Text state with undo/redo
   const initialTextState: TextState = {
     text: "Your Text Here",
     textColor: "#ffffff",
@@ -72,8 +73,10 @@ export default function ClientDashboard() {
     fetchUserData();
   }, [userId]);
 
+  // Check if user can process more images
   const canProcessImage = isPaid || imageCount < 3;
 
+  // Process image using API (e.g., Photoroom)
   const processImage = async (imageUrl: string) => {
     if (!canProcessImage) {
       toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
@@ -112,6 +115,7 @@ export default function ClientDashboard() {
     }
   };
 
+  // Handle image upload
   const handleImageChange = (url: string) => {
     setImageUrl(url);
     setBackgroundImage(url);
@@ -119,6 +123,7 @@ export default function ClientDashboard() {
     processImage(url);
   };
 
+  // Download the final image
   const handleDownload = async () => {
     try {
       if (!previewRef.current) throw new Error("Preview not available");
@@ -137,11 +142,13 @@ export default function ClientDashboard() {
     }
   };
 
+  // Handle payment success
   const handlePaymentSuccess = () => {
-    setIsPaid(true); // Update user status after payment
-    handleDownload(); // Trigger download on success
+    setIsPaid(true); // Mark user as paid
+    handleDownload(); // Trigger download after payment
   };
 
+  // Apply preset
   const applyPreset = (preset: Preset) => {
     const newState: TextState = {
       ...textState,
@@ -167,12 +174,75 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      {/* Navbar and other UI unchanged */}
-      <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">{/* ... */}</div>
+      {/* Navbar */}
+      <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">
+        <div className="navbar-start">
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+              </svg>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li><a onClick={() => setActiveTab("upload")}>Upload</a></li>
+              <li><a onClick={() => setActiveTab("text")}>Text</a></li>
+              <li><a onClick={() => setActiveTab("style")}>Style</a></li>
+              <li><a onClick={() => setActiveTab("presets")}>Presets</a></li>
+              <li><a onClick={() => setActiveTab("history")}>History</a></li>
+            </ul>
+          </div>
+          <a className="btn btn-ghost text-xl">TextVeil</a>
+        </div>
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1">
+            <li><a className={activeTab === "upload" ? "active" : ""} onClick={() => setActiveTab("upload")}>Upload</a></li>
+            <li><a className={activeTab === "text" ? "active" : ""} onClick={() => setActiveTab("text")}>Text</a></li>
+            <li><a className={activeTab === "style" ? "active" : ""} onClick={() => setActiveTab("style")}>Style</a></li>
+            <li><a className={activeTab === "presets" ? "active" : ""} onClick={() => setActiveTab("presets")}>Presets</a></li>
+            <li><a className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>History</a></li>
+          </ul>
+        </div>
+        <div className="navbar-end">
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img
+                  alt="User avatar"
+                  src={session?.user?.image || "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"}
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+            >
+              <li className="p-2 text-sm font-medium">{session?.user?.name}</li>
+              <li>
+                <a onClick={() => signOut({ callbackUrl: "/" })}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Main content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left panel - Controls */}
           <div className="lg:col-span-5 space-y-4">
+            {/* Action buttons */}
             <div className="flex justify-between items-center mb-4">
               <UndoRedo undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
               <div className="flex gap-2">
@@ -248,9 +318,179 @@ export default function ClientDashboard() {
                 </div>
               </div>
             </div>
-            {/* Rest of the left panel unchanged */}
+
+            {/* Tab Content */}
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                {activeTab === "upload" && (
+                  <div>
+                    <h2 className="card-title flex items-center mb-4">
+                      <Upload className="h-5 w-5 mr-2 text-primary" />
+                      Upload Image
+                    </h2>
+                    {isProcessing ? (
+                      <div className="text-center py-8">
+                        <span className="loading loading-spinner loading-lg text-primary"></span>
+                        <p className="mt-4 text-base-content/70">Removing background...</p>
+                      </div>
+                    ) : (
+                      <ImageUploader onImageChange={handleImageChange} disabled={isProcessing} />
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "text" && (
+                  <div>
+                    <h2 className="card-title flex items-center mb-4">
+                      <Type className="h-5 w-5 mr-2 text-primary" />
+                      Text Controls
+                    </h2>
+                    <TextControls
+                      text={textState.text}
+                      setText={(value) => addToHistory({ ...textState, text: value })}
+                      textColor={textState.textColor}
+                      setTextColor={(value) => addToHistory({ ...textState, textColor: value })}
+                      fontSize={textState.fontSize}
+                      setFontSize={(value) => addToHistory({ ...textState, fontSize: value })}
+                      fontWeight={textState.fontWeight}
+                      setFontWeight={(value) => addToHistory({ ...textState, fontWeight: value })}
+                      font={textState.font}
+                      setFont={(value) => addToHistory({ ...textState, font: value })}
+                    />
+                  </div>
+                )}
+
+                {activeTab === "style" && (
+                  <div>
+                    <h2 className="card-title flex items-center mb-4">
+                      <Sliders className="h-5 w-5 mr-2 text-primary" />
+                      Style Settings
+                    </h2>
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Horizontal Position</span>
+                          <span className="label-text-alt">{textState.position.x}%</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={textState.position.x}
+                          onChange={(e) =>
+                            addToHistory({
+                              ...textState,
+                              position: { ...textState.position, x: Number.parseInt(e.target.value) },
+                            })
+                          }
+                          className="range range-primary"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Vertical Position</span>
+                          <span className="label-text-alt">{textState.position.y}%</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={textState.position.y}
+                          onChange={(e) =>
+                            addToHistory({
+                              ...textState,
+                              position: { ...textState.position, y: Number.parseInt(e.target.value) },
+                            })
+                          }
+                          className="range range-primary"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Rotation</span>
+                          <span className="label-text-alt">{textState.rotation}°</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="-180"
+                          max="180"
+                          step="1"
+                          value={textState.rotation}
+                          onChange={(e) => addToHistory({ ...textState, rotation: Number.parseInt(e.target.value) })}
+                          className="range range-primary"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Opacity</span>
+                          <span className="label-text-alt">{Math.round(textState.opacity * 100)}%</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.05"
+                          value={textState.opacity}
+                          onChange={(e) => addToHistory({ ...textState, opacity: Number.parseFloat(e.target.value) })}
+                          className="range range-primary"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Background Color</span>
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={textState.backgroundColor === "transparent" ? "#ffffff" : textState.backgroundColor}
+                            onChange={(e) => addToHistory({ ...textState, backgroundColor: e.target.value })}
+                            className="w-full h-10"
+                          />
+                          <button
+                            className="btn btn-outline btn-sm"
+                            onClick={() => addToHistory({ ...textState, backgroundColor: "transparent" })}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "presets" && (
+                  <div>
+                    <h2 className="card-title flex items-center mb-4">
+                      <Sparkles className="h-5 w-5 mr-2 text-primary" />
+                      Style Presets
+                    </h2>
+                    <Presets applyPreset={applyPreset} />
+                  </div>
+                )}
+
+                {activeTab === "history" && userId && (
+                  <div>
+                    <h2 className="card-title flex items-center mb-4">
+                      <History className="h-5 w-5 mr-2 text-primary" />
+                      Image History
+                    </h2>
+                    <ImageGallery
+                      userId={userId}
+                      onSelectImage={(url) => {
+                        setBackgroundImage(url);
+                        setSubjectImage(url);
+                        setActiveTab("upload");
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
+          {/* Right panel - Preview */}
           <div className="lg:col-span-7">
             <div className="card bg-base-100 shadow-xl h-full">
               <div className="card-body">
@@ -273,11 +513,17 @@ export default function ClientDashboard() {
                     />
                   )}
                 </div>
+
+                {/* Quick actions */}
                 {(backgroundImage || subjectImage) && (
                   <div className="card-actions justify-center mt-4">
                     <div className="join">
                       {isPaid || imageCount < 3 ? (
-                        <button className="btn join-item btn-sm" onClick={handleDownload} disabled={isProcessing}>
+                        <button
+                          className="btn join-item btn-sm"
+                          onClick={handleDownload}
+                          disabled={isProcessing}
+                        >
                           <Save className="h-4 w-4 mr-1" />
                           Save
                         </button>
@@ -288,7 +534,22 @@ export default function ClientDashboard() {
                           onPaymentSuccess={handlePaymentSuccess}
                         />
                       )}
-                      {/* Other quick action buttons unchanged */}
+                      <button
+                        className="btn join-item btn-sm"
+                        onClick={() => setActiveTab("text")}
+                        disabled={isProcessing}
+                      >
+                        <Type className="h-4 w-4 mr-1" />
+                        Edit Text
+                      </button>
+                      <button
+                        className="btn join-item btn-sm"
+                        onClick={() => setActiveTab("style")}
+                        disabled={isProcessing}
+                      >
+                        <Palette className="h-4 w-4 mr-1" />
+                        Style
+                      </button>
                     </div>
                   </div>
                 )}
@@ -297,6 +558,7 @@ export default function ClientDashboard() {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
