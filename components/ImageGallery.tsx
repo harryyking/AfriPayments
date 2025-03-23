@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import prisma from "@/lib/db";
 import { toast } from "react-hot-toast";
 import { History } from "lucide-react";
+
+interface Image {
+  id: string;
+  imageUrl: string;
+  createdAt: string; // API returns ISO string, parsed as string in JSON
+}
 
 interface ImageGalleryProps {
   userId: string;
@@ -11,22 +16,32 @@ interface ImageGalleryProps {
 }
 
 export default function ImageGallery({ userId, onSelectImage }: ImageGalleryProps) {
-  const [images, setImages] = useState<{ id: string; imageUrl: string; createdAt: Date }[]>([]);
+  const [images, setImages] = useState<Image[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const userImages = await fetch(`/api/images?userId=${userId}`).then(res => res.json());
-        setImages(userImages);
+        const response = await fetch(`/api/images?userId=${userId}`, {
+          credentials: "include", // Ensure session cookie is sent
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch images: ${response.statusText}`);
+        }
+        const data = await response.json();
+        // Extract images array from response
+        setImages(data.images || []);
       } catch (error) {
+        console.error("ImageGallery fetch error:", error);
         toast.error("Failed to load image history");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchImages();
+    if (userId) {
+      fetchImages();
+    }
   }, [userId]);
 
   if (isLoading) {
@@ -55,6 +70,7 @@ export default function ImageGallery({ userId, onSelectImage }: ImageGalleryProp
                 alt="Processed image"
                 className="w-full h-32 object-cover rounded-lg cursor-pointer"
                 onClick={() => onSelectImage(image.imageUrl)}
+                onError={() => console.error(`Failed to load image: ${image.imageUrl}`)}
               />
               <p className="text-xs text-gray-500 mt-1">
                 {new Date(image.createdAt).toLocaleDateString()}
