@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import '@/styles/globals.css';
-import { Inter } from 'next/font/google';
+import { Bricolage_Grotesque } from 'next/font/google';
 import Provider from '@/components/Provider';
 import { fontOptions } from '@/lib/font';
 
-const brandFont = Inter({subsets: ["latin"]})
+const brandFont = Bricolage_Grotesque({subsets: ["latin"]})
 
 export const metadata: Metadata = {
   title: 'TextVeil',
