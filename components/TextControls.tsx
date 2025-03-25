@@ -74,7 +74,7 @@ export default function TextControls({
           <input
             type="range"
             min="10"
-            max="100"
+            max="900"
             step="1"
             value={fontSize}
             onChange={(e) => setFontSize(Number.parseInt(e.target.value))}
