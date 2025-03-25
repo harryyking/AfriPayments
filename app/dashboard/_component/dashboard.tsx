@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useState, useRef, useEffect } from "react";
-import { signOut, useSession } from "next-auth/react";
-import html2canvas from "html2canvas-pro";
-import { toast } from "react-hot-toast";
+import { useState, useRef, useEffect } from "react"
+import { signOut, useSession } from "next-auth/react"
+import html2canvas from "html2canvas-pro"
+import { toast } from "react-hot-toast"
 import {
   Download,
   Upload,
@@ -16,31 +16,31 @@ import {
   History,
   ChevronDown,
   Save,
-} from "lucide-react";
-import ImageUploader from "@/components/ImageUploader";
-import ImagePreview from "@/components/ImagePreview";
-import TextControls from "@/components/TextControls";
-import Presets from "@/components/Presets";
-import UndoRedo from "@/components/UndoRedo";
-import ImageGallery from "@/components/ImageGallery";
-import PaystackButton from "@/components/PaystackButton"; // Added PaystackButton import
-import { useHistory } from "@/lib/useHistory";
-import type { TextState, Preset } from "@/types";
+} from "lucide-react"
+import ImageUploader from "@/components/ImageUploader"
+import ImagePreview from "@/components/ImagePreview"
+import TextControls from "@/components/TextControls"
+import Presets from "@/components/Presets"
+import UndoRedo from "@/components/UndoRedo"
+import ImageGallery from "@/components/ImageGallery"
+import PaystackButton from "@/components/PaystackButton" // Added PaystackButton import
+import { useHistory } from "@/lib/useHistory"
+import type { TextState, Preset } from "@/types"
 
 export default function ClientDashboard() {
-  const { data: session, status } = useSession();
-  const userId = session?.user?.email || "";
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
-  const [subjectImage, setSubjectImage] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [fileName, setFileName] = useState<string>("edited-image");
-  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png");
-  const [jpegQuality, setJpegQuality] = useState<number>(0.8);
-  const [activeTab, setActiveTab] = useState<string>("upload");
-  const [imageCount, setImageCount] = useState<number>(0);
-  const [isPaid, setIsPaid] = useState<boolean>(false);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession()
+  const userId = session?.user?.email || ""
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
+  const [subjectImage, setSubjectImage] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState<boolean>(false)
+  const [fileName, setFileName] = useState<string>("edited-image")
+  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png")
+  const [jpegQuality, setJpegQuality] = useState<number>(0.8)
+  const [activeTab, setActiveTab] = useState<string>("upload")
+  const [imageCount, setImageCount] = useState<number>(0)
+  const [isPaid, setIsPaid] = useState<boolean>(false)
+  const previewRef = useRef<HTMLDivElement>(null)
 
   // Text state with undo/redo
   const initialTextState: TextState = {
@@ -56,97 +56,97 @@ export default function ClientDashboard() {
     useOverlay: false,
     brightness: 0,
     contrast: 0,
-  };
-  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState);
+  }
+  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState)
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return;
+      if (!userId) return
       try {
-        const data = await fetch(`/api/images?userId=${userId}`).then((res) => res.json());
-        setImageCount(data.images.length);
-        setIsPaid(data.onPaid);
+        const data = await fetch(`/api/images?userId=${userId}`).then((res) => res.json())
+        setImageCount(data.images.length)
+        setIsPaid(data.onPaid)
       } catch (error) {
-        toast.error("Failed to fetch user data");
+        toast.error("Failed to fetch user data")
       }
-    };
-    fetchUserData();
-  }, [userId]);
+    }
+    fetchUserData()
+  }, [userId])
 
   // Check if user can process more images
-  const canProcessImage = isPaid || imageCount < 3;
+  const canProcessImage = isPaid || imageCount < 3
 
   // Process image using API (e.g., Photoroom)
   const processImage = async (imageUrl: string) => {
     if (!canProcessImage) {
-      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.");
-      return;
+      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.")
+      return
     }
-    setIsProcessing(true);
+    setIsProcessing(true)
     try {
-      if (!imageUrl) throw new Error("No image uploaded");
+      if (!imageUrl) throw new Error("No image uploaded")
       const response = await fetch("/api/remove-bg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl }),
-      });
+      })
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to remove background");
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to remove background")
       }
-      const data = await response.json();
-      const processedImageUrl = data.result;
+      const data = await response.json()
+      const processedImageUrl = data.result
       if (userId) {
         await fetch("/api/images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ imageUrl: processedImageUrl, userId }),
-        });
-        setImageCount((prev) => prev + 1);
+        })
+        setImageCount((prev) => prev + 1)
       }
-      setSubjectImage(processedImageUrl);
-      toast.success("Background removed successfully");
+      setSubjectImage(processedImageUrl)
+      toast.success("Background removed successfully")
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Error: ${errorMessage}`);
-      setSubjectImage(null);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error(`Error: ${errorMessage}`)
+      setSubjectImage(null)
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   // Handle image upload
   const handleImageChange = (url: string) => {
-    setImageUrl(url);
-    setBackgroundImage(url);
-    setSubjectImage(null);
-    processImage(url);
-  };
+    setImageUrl(url)
+    setBackgroundImage(url)
+    setSubjectImage(null)
+    processImage(url)
+  }
 
   // Download the final image
   const handleDownload = async () => {
     try {
-      if (!previewRef.current) throw new Error("Preview not available");
-      const canvas = await html2canvas(previewRef.current, { useCORS: true });
-      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
-      const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL(format, quality);
-      link.download = `${fileName}.${exportFormat}`;
-      link.click();
-      toast.success("Image downloaded successfully");
+      if (!previewRef.current) throw new Error("Preview not available")
+      const canvas = await html2canvas(previewRef.current, { useCORS: true })
+      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png"
+      const quality = exportFormat === "jpeg" ? jpegQuality : undefined
+      const link = document.createElement("a")
+      link.href = canvas.toDataURL(format, quality)
+      link.download = `${fileName}.${exportFormat}`
+      link.click()
+      toast.success("Image downloaded successfully")
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      console.error("Download error:", error);
-      toast.error(`Download failed: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      console.error("Download error:", error)
+      toast.error(`Download failed: ${errorMessage}`)
     }
-  };
+  }
 
   // Handle payment success
   const handlePaymentSuccess = () => {
-    setIsPaid(true); // Mark user as paid
-    handleDownload(); // Trigger download after payment
-  };
+    setIsPaid(true) // Mark user as paid
+    handleDownload() // Trigger download after payment
+  }
 
   // Apply preset
   const applyPreset = (preset: Preset) => {
@@ -159,17 +159,19 @@ export default function ClientDashboard() {
       rotation: preset.rotation,
       opacity: preset.opacity,
       backgroundColor: preset.backgroundColor,
-    };
-    addToHistory(newState);
-    toast.success("Preset applied");
-  };
+    }
+    addToHistory(newState)
+    toast.success("Preset applied")
+  }
 
   if (status === "loading") {
-    return <div className="flex items-center justify-center p-4 min-h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center p-4 min-h-screen">Loading...</div>
   }
 
   if (!session) {
-    return <div className="flex justify-center items-center p-4 min-h-screen">Please sign in to access the dashboard.</div>;
+    return (
+      <div className="flex justify-center items-center p-4 min-h-screen">Please sign in to access the dashboard.</div>
+    )
   }
 
   return (
@@ -193,25 +195,58 @@ export default function ClientDashboard() {
               tabIndex={0}
               className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
-              <li><a onClick={() => setActiveTab("upload")}>Upload</a></li>
-              <li><a onClick={() => setActiveTab("text")}>Text</a></li>
-              <li><a onClick={() => setActiveTab("style")}>Style</a></li>
-              <li><a onClick={() => setActiveTab("presets")}>Presets</a></li>
-              <li><a onClick={() => setActiveTab("history")}>History</a></li>
+              <li>
+                <a onClick={() => setActiveTab("upload")}>Upload</a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("text")}>Text</a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("style")}>Style</a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("presets")}>Presets</a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("history")}>History</a>
+              </li>
             </ul>
           </div>
           <a className="btn btn-ghost text-xl">TextVeil</a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
-            <li><a className={activeTab === "upload" ? "active" : ""} onClick={() => setActiveTab("upload")}>Upload</a></li>
-            <li><a className={activeTab === "text" ? "active" : ""} onClick={() => setActiveTab("text")}>Text</a></li>
-            <li><a className={activeTab === "style" ? "active" : ""} onClick={() => setActiveTab("style")}>Style</a></li>
-            <li><a className={activeTab === "presets" ? "active" : ""} onClick={() => setActiveTab("presets")}>Presets</a></li>
-            <li><a className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>History</a></li>
+            <li>
+              <a className={activeTab === "upload" ? "active" : ""} onClick={() => setActiveTab("upload")}>
+                Upload
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "text" ? "active" : ""} onClick={() => setActiveTab("text")}>
+                Text
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "style" ? "active" : ""} onClick={() => setActiveTab("style")}>
+                Style
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "presets" ? "active" : ""} onClick={() => setActiveTab("presets")}>
+                Presets
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>
+                History
+              </a>
+            </li>
           </ul>
         </div>
         <div className="navbar-end">
+          <div className="mr-4 badge badge-primary badge-outline">
+            {isPaid ? "Unlimited" : `${Math.max(0, 3 - imageCount)} images left`}
+          </div>
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">
@@ -479,9 +514,9 @@ export default function ClientDashboard() {
                     <ImageGallery
                       userId={userId}
                       onSelectImage={(url) => {
-                        setBackgroundImage(url);
-                        setSubjectImage(url);
-                        setActiveTab("upload");
+                        setBackgroundImage(url)
+                        setSubjectImage(url)
+                        setActiveTab("upload")
                       }}
                     />
                   </div>
@@ -519,11 +554,7 @@ export default function ClientDashboard() {
                   <div className="card-actions justify-center mt-4">
                     <div className="join">
                       {isPaid || imageCount < 3 ? (
-                        <button
-                          className="btn join-item btn-sm"
-                          onClick={handleDownload}
-                          disabled={isProcessing}
-                        >
+                        <button className="btn join-item btn-sm" onClick={handleDownload} disabled={isProcessing}>
                           <Save className="h-4 w-4 mr-1" />
                           Save
                         </button>
@@ -559,5 +590,6 @@ export default function ClientDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }
+
