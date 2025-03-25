@@ -3,6 +3,23 @@ import prisma from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
+
+interface ImageRequestBody {
+  imageUrl: string;
+  userId: string; // This is the email from the client, not the DB id
+}
+
+interface User {
+  id: string;
+  email?: string | null;
+}
+
+interface BehindImage {
+  id: string;
+  imageUrl: string;
+  userid: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -41,33 +58,50 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Get the session
     const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session || !session.user || !session.user.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { imageUrl, userId } = await request.json();
+    // Parse and validate the request body
+    const { imageUrl, userId }: ImageRequestBody = await request.json();
     if (!imageUrl || !userId) {
       return NextResponse.json(
-        { error: "Image URL and user ID are required" },
+        { error: 'Image URL and user ID are required' },
         { status: 400 }
       );
     }
 
+    // Ensure the client-provided userId (email) matches the session user’s email
     if (session.user.email !== userId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const newImage = await prisma.behindImage.create({
+    // Fetch the user’s actual ID from the database using their email
+    const user: User | null = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Create the BehindImage record with the user’s actual ID
+    const newImage: BehindImage = await prisma.behindImage.create({
       data: {
         imageUrl,
-        userid: userId, // Match the schema field name
+        userid: user.id, // Use the fetched user.id, not email
       },
     });
 
     return NextResponse.json(newImage, { status: 201 });
   } catch (error) {
-    console.error("POST /api/images error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error('POST /api/images error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

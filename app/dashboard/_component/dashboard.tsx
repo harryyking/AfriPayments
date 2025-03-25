@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import html2canvas from "html2canvas-pro";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import {
   Download,
   Upload,
@@ -558,7 +558,6 @@ export default function ClientDashboard() {
           </div>
         </div>
       </div>
-      <Toaster />
     </div>
   );
 }

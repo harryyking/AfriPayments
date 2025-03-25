@@ -90,7 +90,7 @@ export default function ImagePreview({
     <div className="w-full">
       <div
         ref={previewRef}
-        className="rounded-lg border border-base-300 shadow-inner bg-base-200"
+        className="rounded-lg"
         style={containerStyle}
       >
         {backgroundImage ? (
