@@ -75,8 +75,9 @@ model VerificationToken {
 
 model BehindImage {
   id      String      @id @default(cuid())
-  imageUrl  String
-
+  url       String
+  fileKey   String
+  customId  String
   userid   String
   user    User  @relation(fields: [userid], references: [id])
   createdAt     DateTime  @default(now())

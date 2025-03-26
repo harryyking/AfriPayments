@@ -44,9 +44,9 @@ export default function ClientDashboard() {
 
   // Text state with undo/redo
   const initialTextState: TextState = {
-    text: "Your Text Here",
+    text: "edit",
     textColor: "#ffffff",
-    fontSize: 60,
+    fontSize: 200,
     fontWeight: "700",
     font: "font-montserrat",
     position: { x: 50, y: 50 },
@@ -89,7 +89,7 @@ export default function ClientDashboard() {
       const response = await fetch("/api/remove-bg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: originalUrl, userId }), // Replace with actual userId
+        body: JSON.stringify({ imageUrl: originalUrl }),
       });
   
       if (!response.ok) {
@@ -98,17 +98,23 @@ export default function ClientDashboard() {
       }
   
       const data = await response.json();
-      const processedUrl = data.result; // URL of the processed image
+      const processedUrl = data.result;
+      const processedFileKey = data.fileKey;
   
-      // Save the processed URL to the database
+      // Save to database
       await fetch("/api/images", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: processedUrl, userId }),
+        body: JSON.stringify({
+          imageUrl: processedUrl,
+          fileKey: processedFileKey,
+          customId: `${userId}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, // Match the customId format used in the API route
+          userId,
+        }),
       });
   
       setSubjectImage(processedUrl);
-      toast.success("Image processed successfully");
+      toast.success("Background removed successfully");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${errorMessage}`);
@@ -117,7 +123,6 @@ export default function ClientDashboard() {
       setIsProcessing(false);
     }
   };
-
   // Download the final image
   const handleDownload = async () => {
     try {

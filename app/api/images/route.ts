@@ -16,8 +16,10 @@ interface User {
 
 interface BehindImage {
   id: string;
-  imageUrl: string;
+  url: string;
   userid: string;
+  fileKey: string;
+  customId: string;
 }
 
 export async function GET(request: NextRequest) {
@@ -38,7 +40,7 @@ export async function GET(request: NextRequest) {
     const images = await prisma.behindImage.findMany({
       where: { user: { email: userId } },
       orderBy: { createdAt: "desc" },
-      select: { id: true, imageUrl: true, createdAt: true }, // Select specific fields
+      select: { id: true, url: true, fileKey: true, customId: true, createdAt: true}, // Select specific fields
     });
 
     const user = await prisma.user.findUnique({
@@ -65,13 +67,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse and validate the request body
-    const { imageUrl, userId }: ImageRequestBody = await request.json();
-    if (!imageUrl || !userId) {
-      return NextResponse.json(
-        { error: 'Image URL and user ID are required' },
-        { status: 400 }
-      );
+    const { imageUrl, fileKey, customId, userId } = await request.json();
+
+    if (!imageUrl || !fileKey || !customId || !userId) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
 
     // Ensure the client-provided userId (email) matches the session user’s email
     if (session.user.email !== userId) {
@@ -91,7 +92,9 @@ export async function POST(request: NextRequest) {
     // Create the BehindImage record with the user’s actual ID
     const newImage: BehindImage = await prisma.behindImage.create({
       data: {
-        imageUrl,
+          url: imageUrl,
+          fileKey: fileKey,
+          customId: customId,
         userid: user.id, // Use the fetched user.id, not email
       },
     });
