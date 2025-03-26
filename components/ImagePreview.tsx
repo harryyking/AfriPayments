@@ -11,7 +11,6 @@ interface ImagePreviewProps {
   subjectImage: string | null;
   textState: TextState;
   previewRef: React.RefObject<HTMLDivElement | null>;
-  aspectRatio?: "1:1" | "4:3";
 }
 
 export default function ImagePreview({
@@ -19,24 +18,18 @@ export default function ImagePreview({
   subjectImage,
   textState,
   previewRef,
-  aspectRatio = "1:1",
 }: ImagePreviewProps) {
   const [isLoading, setIsLoading] = useState({
     background: !!backgroundImage,
     subject: !!subjectImage,
   });
 
-  const aspectRatioMap = {
-    "1:1": "100%",
-    "4:3": "75%",
-  };
-
+  // Container style without aspect ratio constraint
   const containerStyle: React.CSSProperties = {
     position: "relative",
     width: "100%",
-    paddingTop: aspectRatioMap[aspectRatio],
     overflow: "hidden",
-    backgroundColor: "transparent"
+    backgroundColor: "transparent",
   };
 
   const imageStyle: React.CSSProperties = {
@@ -45,7 +38,7 @@ export default function ImagePreview({
     left: 0,
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain", // Use "contain" to preserve the image's natural aspect ratio
   };
 
   const backgroundImageStyle: React.CSSProperties = {
@@ -87,12 +80,58 @@ export default function ImagePreview({
     zIndex: 3,
   };
 
+  // Use the first available image to determine the container's dimensions
+  const [containerDimensions, setContainerDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const loadImage = (src: string) => {
+      return new Promise<{ width: number; height: number }>((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+        img.onerror = () => reject(new Error("Failed to load image for dimensions"));
+      });
+    };
+
+    const setDimensions = async () => {
+      try {
+        // Prioritize subjectImage, then backgroundImage
+        if (subjectImage) {
+          const { width, height } = await loadImage(subjectImage);
+          setContainerDimensions({ width, height });
+        } else if (backgroundImage) {
+          const { width, height } = await loadImage(backgroundImage);
+          setContainerDimensions({ width, height });
+        } else {
+          setContainerDimensions(null);
+        }
+      } catch (error) {
+        console.error("Error loading image dimensions:", error);
+        setContainerDimensions(null);
+      }
+    };
+
+    setDimensions();
+  }, [backgroundImage, subjectImage]);
+
+  // Update container style to match the image's natural dimensions
+  const dynamicContainerStyle: React.CSSProperties = {
+    ...containerStyle,
+    width: "100%",
+    height: containerDimensions ? `${(containerDimensions.height / containerDimensions.width) * 100}%` : "auto",
+    paddingTop: containerDimensions ? 0 : "100%", // Fallback to square if no dimensions
+  };
+
   return (
     <div className="w-full">
       <div
         ref={previewRef}
         className="rounded-lg"
-        style={containerStyle}
+        style={dynamicContainerStyle}
       >
         {backgroundImage ? (
           <>
@@ -148,10 +187,6 @@ export default function ImagePreview({
             />
           </>
         )}
-      </div>
-
-      <div className="mt-2 text-xs text-base-content/60 text-center">
-        {backgroundImage && `${aspectRatio} aspect ratio preview`}
       </div>
     </div>
   );

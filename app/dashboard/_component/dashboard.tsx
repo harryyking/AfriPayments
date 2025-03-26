@@ -65,13 +65,13 @@ export default function ClientDashboard() {
     const fetchUserData = async () => {
       if (!userId) return;
       try {
-        const response = await fetch(`/api/images`);
+        const response = await fetch('/api/images');
         if (!response.ok) throw new Error("Failed to fetch user data");
         const data = await response.json();
         setImageCount(data.images.length);
         setIsPaid(data.onPaid);
       } catch (error) {
-        toast.error("Failed to fetch user data");
+        console.error("Failed to fetch user data:", error);
       }
     };
     fetchUserData();
