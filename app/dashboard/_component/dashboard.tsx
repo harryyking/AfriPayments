@@ -575,7 +575,7 @@ export default function ClientDashboard() {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="card bg-base-100 shadow-xl h-full">
+            <div className="card  h-full">
               <div className="card-body">
                 <h2 className="card-title flex items-center">
                   <Image className="h-5 w-5 mr-2 text-primary" />
