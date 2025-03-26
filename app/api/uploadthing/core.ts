@@ -9,11 +9,13 @@ export const ourFileRouter = {
     .middleware(async () => {
       const session = await getServerSession(authOptions);
       if (!session) throw new Error("Unauthorized");
-      return { userId: session.user?.email };
+      const userId = session.user?.email;
+      if (!userId) throw new Error("User email not found in session");
+      return { userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
-      console.log("File URL:", file.ufsUrl);
+      console.log("File URL:", file.ufsUrl); // Use file.url instead of file.ufsUrl
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
 } satisfies FileRouter;

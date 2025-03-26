@@ -76,58 +76,54 @@ export default function ClientDashboard() {
   // Check if user can process more images
   const canProcessImage = isPaid || imageCount < 3
 
-  // Process image using API (e.g., Photoroom)
-  const processImage = async (imageUrl: string) => {
-    if (!canProcessImage) {
-      toast.error("You have reached the free limit of 3 images. Please upgrade to continue.")
-      return
-    }
-    setIsProcessing(true)
+  const handleImageChange = (url: string) => {
+    setImageUrl(url); // Original image URL from UploadThing
+    setBackgroundImage(url);
+    setSubjectImage(null);
+    processImage(url); // Process the image with the API
+  };
+  
+  const processImage = async (originalUrl: string) => {
+    setIsProcessing(true);
     try {
-      if (!imageUrl) throw new Error("No image uploaded")
       const response = await fetch("/api/remove-bg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl }),
-      })
+        body: JSON.stringify({ imageUrl: originalUrl, userId }), // Replace with actual userId
+      });
+  
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to remove background")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to remove background");
       }
-      const data = await response.json()
-      const processedImageUrl = data.result
-      if (userId) {
-        await fetch("/api/images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: processedImageUrl, userId }),
-        })
-        setImageCount((prev) => prev + 1)
-      }
-      setSubjectImage(processedImageUrl)
-      toast.success("Background removed successfully")
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
-      toast.error(`Error: ${errorMessage}`)
-      setSubjectImage(null)
+  
+      const data = await response.json();
+      const processedUrl = data.result; // URL of the processed image
+  
+      // Save the processed URL to the database
+      await fetch("/api/images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: processedUrl, userId }),
+      });
+  
+      setSubjectImage(processedUrl);
+      toast.success("Image processed successfully");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${errorMessage}`);
+      setSubjectImage(null);
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
-
-  // Handle image upload
-  const handleImageChange = (url: string) => {
-    setImageUrl(url)
-    setBackgroundImage(url)
-    setSubjectImage(null)
-    processImage(url)
-  }
+  };
 
   // Download the final image
   const handleDownload = async () => {
     try {
       if (!previewRef.current) throw new Error("Preview not available")
-      const canvas = await html2canvas(previewRef.current, { useCORS: true })
+      const canvas = await html2canvas(previewRef.current, 
+    { useCORS: true , backgroundColor: null })
       const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png"
       const quality = exportFormat === "jpeg" ? jpegQuality : undefined
       const link = document.createElement("a")

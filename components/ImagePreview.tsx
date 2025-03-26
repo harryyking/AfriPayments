@@ -36,6 +36,7 @@ export default function ImagePreview({
     width: "100%",
     paddingTop: aspectRatioMap[aspectRatio],
     overflow: "hidden",
+    backgroundColor: "transparent"
   };
 
   const imageStyle: React.CSSProperties = {

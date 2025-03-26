@@ -16,7 +16,7 @@ export default function ImageUploader({ onImageChange, disabled }: ImageUploader
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           if (res && res[0]) {
-            onImageChange(res[0].url);
+            onImageChange(res[0].ufsUrl);
             setIsUploading(false);
           }
         }}
