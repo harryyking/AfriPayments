@@ -53,9 +53,11 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   onPaid    Boolean   @default(false) 
+  subscriptionCode  String?
+  subscriptionStatus String?
+  lastReset         DateTime?
   
   behindImage   BehindImage[]
-  storeId       String?  @unique // This enforces the one-to-one relation
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())

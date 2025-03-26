@@ -1,37 +1,26 @@
+// app/api/paystack/verify/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 
 export async function POST(request: NextRequest) {
   try {
     const { reference, userId } = await request.json();
-
     if (!reference || !userId) {
       return NextResponse.json({ error: "Reference and userId are required" }, { status: 400 });
     }
 
-    // Verify the transaction with Paystack
-    const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        "Content-Type": "application/json",
       },
     });
 
-    const data = response.data;
-    if (data.status && data.data.status === "success") {
-      // Update the user's payment status in the database
-      const prisma = (await import("@/lib/db")).default;
-      await prisma.user.update({
-        where: { id: userId },
-        data: { onPaid: true },
-      });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Failed to verify transaction");
 
-      return NextResponse.json({ status: "success", message: "Payment verified" });
-    } else {
-      return NextResponse.json({ status: "failed", message: "Payment verification failed" }, { status: 400 });
-    }
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Payment verification error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
