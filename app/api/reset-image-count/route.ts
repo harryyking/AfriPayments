@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     // Step 3: Verify the user exists
     const user = await prisma.user.findUnique({
       where: { email: userId },
+      select: {id: true}
     });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Step 4: Delete all images associated with the user
     await prisma.behindImage.deleteMany({
-      where: { userId },
+      where: { userid : user.id },
     });
 
     // Step 5: Update the last reset timestamp for the user

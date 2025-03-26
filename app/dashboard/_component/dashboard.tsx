@@ -66,6 +66,7 @@ export default function ClientDashboard() {
       if (!userId) return;
       try {
         const response = await fetch('/api/images', {
+          method: "GET",
           credentials: "include",
         });
         if (!response.ok) throw new Error("Failed to fetch user data");
