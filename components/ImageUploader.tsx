@@ -3,7 +3,7 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import { toast } from "react-hot-toast";
 
 interface ImageUploaderProps {
-  onImageChange: (url: string, key: string) => void;
+  onImageChange: (ufsUrl: string, key: string) => void;
   disabled: boolean;
 }
 

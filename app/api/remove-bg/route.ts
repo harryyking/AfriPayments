@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       throw new Error("Failed to upload to UploadThing");
     }
 
-    const processedUrl = uploadedFiles[0].data.url;
+    const processedUrl = uploadedFiles[0].data.ufsUrl;
     const processedFileKey = uploadedFiles[0].data.key;
 
     // Enforce a limit (e.g., keep only the latest 10 images for a user)
