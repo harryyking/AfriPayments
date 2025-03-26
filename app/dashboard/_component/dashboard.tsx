@@ -32,6 +32,7 @@ export default function ClientDashboard() {
   const userId = session?.user?.email || "";
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [backgroundFileKey, setBackgroundFileKey] = useState<string | null>(null);
   const [subjectImage, setSubjectImage] = useState<string | null>(null);
   const [subjectFileKey, setSubjectFileKey] = useState<string | null>(null); // Added to store fileKey
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -78,9 +79,10 @@ export default function ClientDashboard() {
 
   const canProcessImage = isPaid || imageCount < 3;
 
-  const handleImageChange = (url: string) => {
+  const handleImageChange = (url: string, key: string) => {
     setImageUrl(url);
     setBackgroundImage(url);
+    setBackgroundFileKey(key); 
     setSubjectImage(null);
     setSubjectFileKey(null);
     processImage(url);
@@ -129,18 +131,40 @@ export default function ClientDashboard() {
   };
 
   const handleDownload = async () => {
-    setIsDownloading(true);
+    setIsDownloading(true)
     try {
       if (!previewRef.current) throw new Error("Preview not available");
       if (!subjectImage || !subjectFileKey) throw new Error("No processed image available");
 
-      // Check if the subject image still exists in UploadThing
-      const checkResponse = await fetch(`/api/check-file?fileKey=${subjectFileKey}`);
-      if (!checkResponse.ok) throw new Error("Failed to check file existence");
-      const checkData = await checkResponse.json();
-
-      if (!checkData.exists) {
+      // Check if the subject image exists
+      const subjectCheckResponse = await fetch(`/api/check-file?fileKey=${subjectFileKey}`, {
+        credentials: "include",
+      });
+      if (!subjectCheckResponse.ok) {
+        const errorData = await subjectCheckResponse.json();
+        throw new Error(`Failed to check subject image existence: ${errorData.error}`);
+      }
+      const subjectCheckData = await subjectCheckResponse.json();
+      if (!subjectCheckData.exists) {
         throw new Error("Processed image no longer exists in storage. Please reprocess the image.");
+      }
+
+      // Check if the background image exists (if present)
+      if (backgroundImage && backgroundFileKey) {
+        const backgroundCheckResponse = await fetch(`/api/check-file?fileKey=${backgroundFileKey}`, {
+          credentials: "include",
+        });
+        if (!backgroundCheckResponse.ok) {
+          const errorData = await backgroundCheckResponse.json();
+          throw new Error(`Failed to check background image existence: ${errorData.error}`);
+        }
+        const backgroundCheckData = await backgroundCheckResponse.json();
+        if (!backgroundCheckData.exists) {
+          // Background image is missing; proceed without it
+          setBackgroundImage(null);
+          setBackgroundFileKey(null);
+          toast.error("Background image no longer exists and will be excluded from the download.");
+        }
       }
 
       // Capture the preview with html2canvas
@@ -159,10 +183,11 @@ export default function ClientDashboard() {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       console.error("Download error:", error);
       toast.error(`Download failed: ${errorMessage}`);
-    } finally {
-      setIsDownloading(false);
+    } finally{
+      setIsDownloading(false)
     }
   };
+
 
   const handlePaymentSuccess = () => {
     setIsPaid(true);

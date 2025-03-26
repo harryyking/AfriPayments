@@ -3,7 +3,7 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import { toast } from "react-hot-toast";
 
 interface ImageUploaderProps {
-  onImageChange: (url: string) => void;
+  onImageChange: (url: string, key: string) => void;
   disabled: boolean;
 }
 
@@ -15,8 +15,9 @@ export default function ImageUploader({ onImageChange, disabled }: ImageUploader
       <UploadDropzone
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
-          if (res && res[0]) {
-            onImageChange(res[0].ufsUrl);
+         if (res && res.length > 0) {
+            const { ufsUrl, key } = res[0];
+            onImageChange(ufsUrl, key); // Pass both URL and fileKey
             setIsUploading(false);
           }
         }}
