@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 4: Delete all images associated with the user
-    await prisma.image.deleteMany({
+    await prisma.behindImage.deleteMany({
       where: { userId },
     });
 
