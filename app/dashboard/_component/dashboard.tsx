@@ -196,6 +196,7 @@ export default function ClientDashboard() {
     setIsPaid(true)
     setImageCount(0) // Reset image count on subscription activation
     handleDownload()
+    toast.success("Subscription activated successfully!")
   }
 
   const applyPreset = (preset: Preset) => {
@@ -238,40 +239,94 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-base-200">
       {/* Header */}
       <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
-          <a className="btn btn-ghost text-xl">
-            <span className="text-primary font-bold">Text</span>Veil
-          </a>
-        </div>
-
-        <div className="navbar-center hidden lg:flex">
-          <div className="tabs tabs-boxed bg-base-200">
-            <a className={`tab ${activeTab === "upload" ? "tab-active" : ""}`} onClick={() => setActiveTab("upload")}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload
-            </a>
-            <a className={`tab ${activeTab === "text" ? "tab-active" : ""}`} onClick={() => setActiveTab("text")}>
-              <Type className="h-4 w-4 mr-2" />
-              Text
-            </a>
-            <a className={`tab ${activeTab === "style" ? "tab-active" : ""}`} onClick={() => setActiveTab("style")}>
-              <Sliders className="h-4 w-4 mr-2" />
-              Style
-            </a>
-            <a className={`tab ${activeTab === "presets" ? "tab-active" : ""}`} onClick={() => setActiveTab("presets")}>
-              <Sparkles className="h-4 w-4 mr-2" />
-              Presets
-            </a>
-            <a className={`tab ${activeTab === "history" ? "tab-active" : ""}`} onClick={() => setActiveTab("history")}>
-              <History className="h-4 w-4 mr-2" />
-              History
-            </a>
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+              </svg>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <a onClick={() => setActiveTab("upload")}>
+                  <Upload className="h-4 w-4" />
+                  Upload
+                </a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("text")}>
+                  <Type className="h-4 w-4" />
+                  Text
+                </a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("style")}>
+                  <Sliders className="h-4 w-4" />
+                  Style
+                </a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("presets")}>
+                  <Sparkles className="h-4 w-4" />
+                  Presets
+                </a>
+              </li>
+              <li>
+                <a onClick={() => setActiveTab("history")}>
+                  <History className="h-4 w-4" />
+                  History
+                </a>
+              </li>
+            </ul>
           </div>
+          <a className="btn btn-ghost text-xl">TextVeil</a>
         </div>
-
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1">
+            <li>
+              <a className={activeTab === "upload" ? "active" : ""} onClick={() => setActiveTab("upload")}>
+                <Upload className="h-4 w-4" />
+                Upload
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "text" ? "active" : ""} onClick={() => setActiveTab("text")}>
+                <Type className="h-4 w-4" />
+                Text
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "style" ? "active" : ""} onClick={() => setActiveTab("style")}>
+                <Sliders className="h-4 w-4" />
+                Style
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "presets" ? "active" : ""} onClick={() => setActiveTab("presets")}>
+                <Sparkles className="h-4 w-4" />
+                Presets
+              </a>
+            </li>
+            <li>
+              <a className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>
+                <History className="h-4 w-4" />
+                History
+              </a>
+            </li>
+          </ul>
+        </div>
         <div className="navbar-end">
           <div className="mr-4 badge badge-primary badge-outline">
             {isPaid ? "Subscribed" : `${Math.max(0, 3 - imageCount)} images left`}
@@ -292,7 +347,7 @@ export default function ClientDashboard() {
               <li className="p-2 text-sm font-medium">{session?.user?.name}</li>
               <li>
                 <a onClick={() => signOut({ callbackUrl: "/" })}>
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
                 </a>
               </li>
@@ -301,54 +356,21 @@ export default function ClientDashboard() {
         </div>
       </div>
 
-      {/* Mobile Tabs */}
-      <div className="lg:hidden bg-base-100 shadow-sm">
-        <div className="tabs tabs-boxed flex justify-between p-2">
-          <a
-            className={`tab tab-sm ${activeTab === "upload" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("upload")}
-          >
-            <Upload className="h-4 w-4" />
-          </a>
-          <a className={`tab tab-sm ${activeTab === "text" ? "tab-active" : ""}`} onClick={() => setActiveTab("text")}>
-            <Type className="h-4 w-4" />
-          </a>
-          <a
-            className={`tab tab-sm ${activeTab === "style" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("style")}
-          >
-            <Sliders className="h-4 w-4" />
-          </a>
-          <a
-            className={`tab tab-sm ${activeTab === "presets" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("presets")}
-          >
-            <Sparkles className="h-4 w-4" />
-          </a>
-          <a
-            className={`tab tab-sm ${activeTab === "history" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("history")}
-          >
-            <History className="h-4 w-4" />
-          </a>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Image Preview - Left Side */}
           <div className="lg:col-span-7 order-2 lg:order-1">
             <div className="card bg-base-100 shadow-xl h-full">
-              <div className="card-body p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="card-title flex items-center text-lg">
+              <div className="card-body">
+                <div className="flex justify-between items-center">
+                  <h2 className="card-title flex items-center">
                     <Image className="h-5 w-5 mr-2 text-primary" />
                     Preview
                   </h2>
                   <UndoRedo undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
                 </div>
 
-                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[500px]">
+                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[400px]">
                   {isProcessing ? (
                     <div className="text-center">
                       <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -366,86 +388,90 @@ export default function ClientDashboard() {
 
                 {(backgroundImage || subjectImage) && (
                   <div className="card-actions justify-center mt-4">
-                    <div className="btn-group">
-                      {isPaid || imageCount < 3 ? (
-                        <button className="btn btn-primary" onClick={handleDownload} disabled={isProcessing}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </button>
-                      ) : (
-                        <PaystackButton
-                          userId={userId}
-                          email={session.user.email || ""}
-                          onPaymentSuccess={handlePaymentSuccess}
-                        />
-                      )}
-                      <div className="dropdown dropdown-top">
-                        <div tabIndex={0} role="button" className="btn btn-primary">
-                          <ChevronDown className="h-4 w-4" />
-                        </div>
-                        <div
-                          tabIndex={0}
-                          className="dropdown-content z-[1] card card-compact bg-base-100 shadow-xl w-72 p-0"
-                        >
-                          <div className="card-body">
-                            <h3 className="font-medium text-lg">Export Options</h3>
+                    <div className="dropdown dropdown-top">
+                      <div tabIndex={0} role="button" className="btn btn-primary">
+                        <Download className="h-4 w-4 mr-2" />
+                        Export
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                      </div>
+                      <div
+                        tabIndex={0}
+                        className="dropdown-content z-[1] card card-compact bg-base-100 shadow-xl w-72 p-0"
+                      >
+                        <div className="card-body">
+                          <h3 className="font-medium text-lg">Export Options</h3>
+                          <div className="form-control">
+                            <label className="label">
+                              <span className="label-text font-medium">File Name</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={fileName}
+                              onChange={(e) => setFileName(e.target.value || "edited-image")}
+                              placeholder="Enter file name"
+                              className="input input-bordered w-full"
+                            />
+                          </div>
+                          <div className="form-control">
+                            <label className="label">
+                              <span className="label-text font-medium">Format</span>
+                            </label>
+                            <div className="flex gap-4">
+                              <label className="label cursor-pointer justify-start gap-2">
+                                <input
+                                  type="radio"
+                                  name="format"
+                                  className="radio radio-primary"
+                                  checked={exportFormat === "png"}
+                                  onChange={() => setExportFormat("png")}
+                                />
+                                <span className="label-text">PNG</span>
+                              </label>
+                              <label className="label cursor-pointer justify-start gap-2">
+                                <input
+                                  type="radio"
+                                  name="format"
+                                  className="radio radio-primary"
+                                  checked={exportFormat === "jpeg"}
+                                  onChange={() => setExportFormat("jpeg")}
+                                />
+                                <span className="label-text">JPEG</span>
+                              </label>
+                            </div>
+                          </div>
+                          {exportFormat === "jpeg" && (
                             <div className="form-control">
                               <label className="label">
-                                <span className="label-text font-medium">File Name</span>
+                                <span className="label-text font-medium">JPEG Quality</span>
+                                <span className="label-text-alt">{Math.round(jpegQuality * 100)}%</span>
                               </label>
                               <input
-                                type="text"
-                                value={fileName}
-                                onChange={(e) => setFileName(e.target.value || "edited-image")}
-                                placeholder="Enter file name"
-                                className="input input-bordered w-full"
+                                type="range"
+                                min="0.1"
+                                max="1"
+                                step="0.1"
+                                value={jpegQuality}
+                                onChange={(e) => setJpegQuality(Number.parseFloat(e.target.value))}
+                                className="range range-primary"
                               />
                             </div>
-                            <div className="form-control">
-                              <label className="label">
-                                <span className="label-text font-medium">Format</span>
-                              </label>
-                              <div className="flex gap-4">
-                                <label className="label cursor-pointer justify-start gap-2">
-                                  <input
-                                    type="radio"
-                                    name="format"
-                                    className="radio radio-primary"
-                                    checked={exportFormat === "png"}
-                                    onChange={() => setExportFormat("png")}
-                                  />
-                                  <span className="label-text">PNG</span>
-                                </label>
-                                <label className="label cursor-pointer justify-start gap-2">
-                                  <input
-                                    type="radio"
-                                    name="format"
-                                    className="radio radio-primary"
-                                    checked={exportFormat === "jpeg"}
-                                    onChange={() => setExportFormat("jpeg")}
-                                  />
-                                  <span className="label-text">JPEG</span>
-                                </label>
-                              </div>
-                            </div>
-                            {exportFormat === "jpeg" && (
-                              <div className="form-control">
-                                <label className="label">
-                                  <span className="label-text font-medium">JPEG Quality</span>
-                                  <span className="label-text-alt">{Math.round(jpegQuality * 100)}%</span>
-                                </label>
-                                <input
-                                  type="range"
-                                  min="0.1"
-                                  max="1"
-                                  step="0.1"
-                                  value={jpegQuality}
-                                  onChange={(e) => setJpegQuality(Number.parseFloat(e.target.value))}
-                                  className="range range-primary"
-                                />
-                              </div>
-                            )}
-                          </div>
+                          )}
+                          {isPaid || imageCount < 3 ? (
+                            <button
+                              className="btn btn-primary w-full mt-4"
+                              onClick={handleDownload}
+                              disabled={isProcessing}
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Image
+                            </button>
+                          ) : (
+                            <PaystackButton
+                              userId={userId}
+                              email={session.user.email || ""}
+                              onPaymentSuccess={handlePaymentSuccess}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -458,10 +484,45 @@ export default function ClientDashboard() {
           {/* Controls - Right Side */}
           <div className="lg:col-span-5 order-1 lg:order-2">
             <div className="card bg-base-100 shadow-xl">
-              <div className="card-body p-4">
+              <div className="card-body">
+                <div className="tabs tabs-boxed mb-4">
+                  <a
+                    className={`tab ${activeTab === "upload" ? "tab-active" : ""}`}
+                    onClick={() => setActiveTab("upload")}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </a>
+                  <a className={`tab ${activeTab === "text" ? "tab-active" : ""}`} onClick={() => setActiveTab("text")}>
+                    <Type className="h-4 w-4 mr-2" />
+                    Text
+                  </a>
+                  <a
+                    className={`tab ${activeTab === "style" ? "tab-active" : ""}`}
+                    onClick={() => setActiveTab("style")}
+                  >
+                    <Sliders className="h-4 w-4 mr-2" />
+                    Style
+                  </a>
+                  <a
+                    className={`tab ${activeTab === "presets" ? "tab-active" : ""}`}
+                    onClick={() => setActiveTab("presets")}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Presets
+                  </a>
+                  <a
+                    className={`tab ${activeTab === "history" ? "tab-active" : ""}`}
+                    onClick={() => setActiveTab("history")}
+                  >
+                    <History className="h-4 w-4 mr-2" />
+                    History
+                  </a>
+                </div>
+
                 {activeTab === "upload" && (
                   <div>
-                    <h2 className="card-title flex items-center mb-4">
+                    <h2 className="text-lg font-medium flex items-center mb-4">
                       <Upload className="h-5 w-5 mr-2 text-primary" />
                       Upload Image
                     </h2>
@@ -478,7 +539,7 @@ export default function ClientDashboard() {
 
                 {activeTab === "text" && (
                   <div>
-                    <h2 className="card-title flex items-center mb-4">
+                    <h2 className="text-lg font-medium flex items-center mb-4">
                       <Type className="h-5 w-5 mr-2 text-primary" />
                       Text Controls
                     </h2>
@@ -499,7 +560,7 @@ export default function ClientDashboard() {
 
                 {activeTab === "style" && (
                   <div>
-                    <h2 className="card-title flex items-center mb-4">
+                    <h2 className="text-lg font-medium flex items-center mb-4">
                       <Sliders className="h-5 w-5 mr-2 text-primary" />
                       Style Settings
                     </h2>
@@ -589,13 +650,6 @@ export default function ClientDashboard() {
                             onChange={(e) => addToHistory({ ...textState, backgroundColor: e.target.value })}
                             className="w-12 h-10 p-1 rounded-md"
                           />
-                          <input
-                            type="text"
-                            value={textState.backgroundColor === "transparent" ? "" : textState.backgroundColor}
-                            onChange={(e) => addToHistory({ ...textState, backgroundColor: e.target.value })}
-                            placeholder="Transparent"
-                            className="input input-bordered flex-1"
-                          />
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={() => addToHistory({ ...textState, backgroundColor: "transparent" })}
@@ -610,7 +664,7 @@ export default function ClientDashboard() {
 
                 {activeTab === "presets" && (
                   <div>
-                    <h2 className="card-title flex items-center mb-4">
+                    <h2 className="text-lg font-medium flex items-center mb-4">
                       <Sparkles className="h-5 w-5 mr-2 text-primary" />
                       Style Presets
                     </h2>
@@ -620,7 +674,7 @@ export default function ClientDashboard() {
 
                 {activeTab === "history" && userId && (
                   <div>
-                    <h2 className="card-title flex items-center mb-4">
+                    <h2 className="text-lg font-medium flex items-center mb-4">
                       <History className="h-5 w-5 mr-2 text-primary" />
                       Image History
                     </h2>
