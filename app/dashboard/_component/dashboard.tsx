@@ -238,7 +238,7 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
