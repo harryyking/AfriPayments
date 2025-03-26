@@ -424,7 +424,7 @@ export default function ClientDashboard() {
                     {isProcessing ? (
                       <div className="text-center py-8">
                         <span className="loading loading-spinner loading-lg text-primary"></span>
-                        <p className="mt-4 text-base-content/70">Removing background...</p>
+                        <p className="mt-4 text-base-content/70">Processing...</p>
                       </div>
                     ) : (
                       <ImageUploader onImageChange={handleImageChange} disabled={isProcessing} />
