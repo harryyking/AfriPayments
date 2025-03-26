@@ -13,10 +13,10 @@ export const ourFileRouter = {
       if (!userId) throw new Error("User email not found in session");
       return { userId };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata, file, }) => {
       console.log("Upload complete for userId:", metadata.userId);
       console.log("File URL:", file.ufsUrl); // Use file.url instead of file.ufsUrl
-      return { uploadedBy: metadata.userId, url: file.ufsUrl };
+      return { uploadedBy: metadata.userId, url: file.ufsUrl,  };
     }),
 } satisfies FileRouter;
 
