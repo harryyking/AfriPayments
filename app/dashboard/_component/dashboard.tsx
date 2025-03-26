@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { signOut, useSession } from "next-auth/react"
-import html2canvas from "html2canvas-pro"
-import { toast } from "react-hot-toast"
+import { useState, useRef, useEffect } from "react";
+import { signOut, useSession } from "next-auth/react";
+import html2canvas from "html2canvas-pro";
+import { toast } from "react-hot-toast";
 import {
   Download,
   Upload,
@@ -16,33 +16,34 @@ import {
   History,
   ChevronDown,
   Save,
-} from "lucide-react"
-import ImageUploader from "@/components/ImageUploader"
-import ImagePreview from "@/components/ImagePreview"
-import TextControls from "@/components/TextControls"
-import Presets from "@/components/Presets"
-import UndoRedo from "@/components/UndoRedo"
-import ImageGallery from "@/components/ImageGallery"
-import PaystackButton from "@/components/PaystackButton" // Added PaystackButton import
-import { useHistory } from "@/lib/useHistory"
-import type { TextState, Preset } from "@/types"
+} from "lucide-react";
+import ImageUploader from "@/components/ImageUploader";
+import ImagePreview from "@/components/ImagePreview";
+import TextControls from "@/components/TextControls";
+import Presets from "@/components/Presets";
+import UndoRedo from "@/components/UndoRedo";
+import ImageGallery from "@/components/ImageGallery";
+import PaystackButton from "@/components/PaystackButton";
+import { useHistory } from "@/lib/useHistory";
+import type { TextState, Preset } from "@/types";
 
 export default function ClientDashboard() {
-  const { data: session, status } = useSession()
-  const userId = session?.user?.email || ""
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
-  const [subjectImage, setSubjectImage] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState<boolean>(false)
-  const [fileName, setFileName] = useState<string>("edited-image")
-  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png")
-  const [jpegQuality, setJpegQuality] = useState<number>(0.8)
-  const [activeTab, setActiveTab] = useState<string>("upload")
-  const [imageCount, setImageCount] = useState<number>(0)
-  const [isPaid, setIsPaid] = useState<boolean>(false)
-  const previewRef = useRef<HTMLDivElement>(null)
+  const { data: session, status } = useSession();
+  const userId = session?.user?.email || "";
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [subjectImage, setSubjectImage] = useState<string | null>(null);
+  const [subjectFileKey, setSubjectFileKey] = useState<string | null>(null); // Added to store fileKey
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>("edited-image");
+  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png");
+  const [jpegQuality, setJpegQuality] = useState<number>(0.8);
+  const [activeTab, setActiveTab] = useState<string>("upload");
+  const [imageCount, setImageCount] = useState<number>(0);
+  const [isPaid, setIsPaid] = useState<boolean>(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  // Text state with undo/redo
   const initialTextState: TextState = {
     text: "edit",
     textColor: "#ffffff",
@@ -56,33 +57,35 @@ export default function ClientDashboard() {
     useOverlay: false,
     brightness: 0,
     contrast: 0,
-  }
-  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState)
+  };
+  const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return
+      if (!userId) return;
       try {
-        const data = await fetch(`/api/images?userId=${userId}`).then((res) => res.json())
-        setImageCount(data.images.length)
-        setIsPaid(data.onPaid)
+        const response = await fetch(`/api/images`);
+        if (!response.ok) throw new Error("Failed to fetch user data");
+        const data = await response.json();
+        setImageCount(data.images.length);
+        setIsPaid(data.onPaid);
       } catch (error) {
-        toast.error("Failed to fetch user data")
+        toast.error("Failed to fetch user data");
       }
-    }
-    fetchUserData()
-  }, [userId])
+    };
+    fetchUserData();
+  }, [userId]);
 
-  // Check if user can process more images
-  const canProcessImage = isPaid || imageCount < 3
+  const canProcessImage = isPaid || imageCount < 3;
 
   const handleImageChange = (url: string) => {
-    setImageUrl(url); // Original image URL from UploadThing
+    setImageUrl(url);
     setBackgroundImage(url);
     setSubjectImage(null);
-    processImage(url); // Process the image with the API
+    setSubjectFileKey(null);
+    processImage(url);
   };
-  
+
   const processImage = async (originalUrl: string) => {
     setIsProcessing(true);
     try {
@@ -91,65 +94,81 @@ export default function ClientDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl: originalUrl }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to remove background");
       }
-  
+
       const data = await response.json();
       const processedUrl = data.result;
       const processedFileKey = data.fileKey;
-  
-      // Save to database
+
       await fetch("/api/images", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           imageUrl: processedUrl,
           fileKey: processedFileKey,
-          customId: `${userId}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, // Match the customId format used in the API route
+          customId: `${userId}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           userId,
         }),
       });
-  
+
       setSubjectImage(processedUrl);
+      setSubjectFileKey(processedFileKey); // Store the fileKey
       toast.success("Background removed successfully");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${errorMessage}`);
       setSubjectImage(null);
+      setSubjectFileKey(null);
     } finally {
       setIsProcessing(false);
     }
   };
-  // Download the final image
+
   const handleDownload = async () => {
+    setIsDownloading(true);
     try {
-      if (!previewRef.current) throw new Error("Preview not available")
-      const canvas = await html2canvas(previewRef.current, 
-    { useCORS: true , backgroundColor: null })
-      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png"
-      const quality = exportFormat === "jpeg" ? jpegQuality : undefined
-      const link = document.createElement("a")
-      link.href = canvas.toDataURL(format, quality)
-      link.download = `${fileName}.${exportFormat}`
-      link.click()
-      toast.success("Image downloaded successfully")
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
-      console.error("Download error:", error)
-      toast.error(`Download failed: ${errorMessage}`)
+      if (!previewRef.current) throw new Error("Preview not available");
+      if (!subjectImage || !subjectFileKey) throw new Error("No processed image available");
+
+      // Check if the subject image still exists in UploadThing
+      const checkResponse = await fetch(`/api/check-file?fileKey=${subjectFileKey}`);
+      if (!checkResponse.ok) throw new Error("Failed to check file existence");
+      const checkData = await checkResponse.json();
+
+      if (!checkData.exists) {
+        throw new Error("Processed image no longer exists in storage. Please reprocess the image.");
+      }
+
+      // Capture the preview with html2canvas
+      const canvas = await html2canvas(previewRef.current, {
+        useCORS: true,
+        backgroundColor: null,
+      });
+      const format = exportFormat === "jpeg" ? "image/jpeg" : "image/png";
+      const quality = exportFormat === "jpeg" ? jpegQuality : undefined;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL(format, quality);
+      link.download = `${fileName}.${exportFormat}`;
+      link.click();
+      toast.success("Image downloaded successfully");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Download error:", error);
+      toast.error(`Download failed: ${errorMessage}`);
+    } finally {
+      setIsDownloading(false);
     }
-  }
+  };
 
-  // Handle payment success
   const handlePaymentSuccess = () => {
-    setIsPaid(true) // Mark user as paid
-    handleDownload() // Trigger download after payment
-  }
+    setIsPaid(true);
+    handleDownload();
+  };
 
-  // Apply preset
   const applyPreset = (preset: Preset) => {
     const newState: TextState = {
       ...textState,
@@ -160,19 +179,21 @@ export default function ClientDashboard() {
       rotation: preset.rotation,
       opacity: preset.opacity,
       backgroundColor: preset.backgroundColor,
-    }
-    addToHistory(newState)
-    toast.success("Preset applied")
-  }
+    };
+    addToHistory(newState);
+    toast.success("Preset applied");
+  };
 
   if (status === "loading") {
-    return <div className="flex items-center justify-center p-4 min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center p-4 min-h-screen">Loading...</div>;
   }
 
   if (!session) {
     return (
-      <div className="flex justify-center items-center p-4 min-h-screen">Please sign in to access the dashboard.</div>
-    )
+      <div className="flex justify-center items-center p-4 min-h-screen">
+        Please sign in to access the dashboard.
+      </div>
+    );
   }
 
   return (
@@ -274,11 +295,8 @@ export default function ClientDashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Main content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left panel - Controls */}
           <div className="lg:col-span-5 space-y-4">
-            {/* Action buttons */}
             <div className="flex justify-between items-center mb-4">
               <UndoRedo undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
               <div className="flex gap-2">
@@ -339,8 +357,14 @@ export default function ClientDashboard() {
                           onClick={handleDownload}
                           disabled={isProcessing}
                         >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download Image
+                          {isDownloading ? (
+                                <span className="loading loading-spinner"></span>
+                              ) : (
+                                <>
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Download Image
+                                </>
+                                )}
                         </button>
                       ) : (
                         <PaystackButton
@@ -355,7 +379,6 @@ export default function ClientDashboard() {
               </div>
             </div>
 
-            {/* Tab Content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 {activeTab === "upload" && (
@@ -515,9 +538,9 @@ export default function ClientDashboard() {
                     <ImageGallery
                       userId={userId}
                       onSelectImage={(url) => {
-                        setBackgroundImage(url)
-                        setSubjectImage(url)
-                        setActiveTab("upload")
+                        setBackgroundImage(url);
+                        setSubjectImage(url);
+                        setActiveTab("upload");
                       }}
                     />
                   </div>
@@ -526,7 +549,6 @@ export default function ClientDashboard() {
             </div>
           </div>
 
-          {/* Right panel - Preview */}
           <div className="lg:col-span-7">
             <div className="card bg-base-100 shadow-xl h-full">
               <div className="card-body">
@@ -550,7 +572,6 @@ export default function ClientDashboard() {
                   )}
                 </div>
 
-                {/* Quick actions */}
                 {(backgroundImage || subjectImage) && (
                   <div className="card-actions justify-center mt-4">
                     <div className="join">
@@ -591,6 +612,5 @@ export default function ClientDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
