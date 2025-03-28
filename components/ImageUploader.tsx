@@ -30,7 +30,7 @@ export default function ImageUploader({ onImageChange, disabled }: ImageUploader
         className="ut-button:bg-blue-500 ut-button:hover:bg-blue-600 ut-label:text-gray-700"
       />
       {(disabled || isUploading) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50 rounded-lg">
+        <div className="absolute inset-0 flex items-center justify-center bg-opacity-50 rounded-lg">
           <span className="text-gray-500">{isUploading ? "Uploading..." : "Processing..."}</span>
         </div>
       )}

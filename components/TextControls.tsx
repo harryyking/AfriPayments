@@ -41,7 +41,7 @@ export default function TextControls({
   }, [font, fontWeight, setFontWeight]);
 
   return (
-    <div className="card bg-white shadow-md p-6">
+    <div className="card shadow-md p-6">
       <div className="space-y-4">
         <div className="form-control">
           <label className="label">

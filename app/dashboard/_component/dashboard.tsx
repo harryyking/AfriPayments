@@ -239,7 +239,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <div className="navbar bg-base-100 shadow-md px-4 sm:px-6 lg:px-8">
+      <div className="navbar bg-base-100 border-b px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -336,10 +336,10 @@ export default function ClientDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-6 max-h-[40rem]">
             <div className="card bg-base-100 shadow-xl h-full">
               <div className="card-body">
-                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[400px]">
+                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[500px]">
                   {isProcessing ? (
                     <div className="text-center">
                       <span className="loading loading-spinner loading-lg text-primary"></span>

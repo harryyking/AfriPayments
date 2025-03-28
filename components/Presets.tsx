@@ -39,7 +39,7 @@ const presets: Preset[] = [
 
 export default function Presets({ applyPreset }: PresetsProps) {
   return (
-    <div className="card bg-white shadow-md p-6">
+    <div className="card  shadow-md p-6">
       <h2 className="text-lg font-medium flex items-center mb-4">
         <span className="h-5 w-5 mr-2 text-blue-500">Presets</span>
       </h2>

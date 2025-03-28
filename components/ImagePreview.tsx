@@ -211,9 +211,8 @@ export default function ImagePreview({
             />
           </>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-300 bg-opacity-50 z-3">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-200 h-full bg-opacity-50 z-3">
             <ImageIcon size={48} className="text-base-content opacity-20 mb-2" />
-            <p className="text-base-content opacity-60 text-center px-4">No subject image available</p>
           </div>
         )}
       </div>
