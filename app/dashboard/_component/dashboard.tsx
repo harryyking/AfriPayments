@@ -46,9 +46,9 @@ export default function ClientDashboard() {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const initialTextState: TextState = {
-    text: "edit",
+    text: "text behind image",
     textColor: "#ffffff",
-    fontSize: 200,
+    fontSize: 90,
     fontWeight: "700",
     font: "font-montserrat",
     position: { x: 50, y: 50 },
@@ -335,7 +335,7 @@ export default function ClientDashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-6 max-h-[40rem]">
             <div className="card bg-base-100 shadow-xl h-full">
               <div className="card-body">
