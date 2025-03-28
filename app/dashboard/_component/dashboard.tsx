@@ -336,6 +336,64 @@ export default function ClientDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-6">
+            <div className="card bg-base-100 shadow-xl h-full">
+              <div className="card-body">
+                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[400px]">
+                  {isProcessing ? (
+                    <div className="text-center">
+                      <span className="loading loading-spinner loading-lg text-primary"></span>
+                      <p className="mt-4 text-base-content/70">Processing your image...</p>
+                    </div>
+                  ) : (
+                    <ImagePreview
+                      backgroundImage={backgroundImage}
+                      subjectImage={subjectImage}
+                      textState={textState}
+                      previewRef={previewRef}
+                    />
+                  )}
+                </div>
+
+                {(backgroundImage || subjectImage) && (
+                  <div className="card-actions justify-center mt-4">
+                    <div className="join">
+                      {isPaid || imageCount < 3 ? (
+                        <button className="btn join-item btn-sm" onClick={handleDownload} disabled={isProcessing}>
+                          <Save className="h-4 w-4 mr-1" />
+                          Save
+                        </button>
+                      ) : (
+                        <PaystackButton
+                          userId={userId}
+                          email={session.user.email || ""}
+                          onPaymentSuccess={handlePaymentSuccess}
+                        />
+                      )}
+                      <button
+                        className="btn join-item btn-sm"
+                        onClick={() => setActiveTab("text")}
+                        disabled={isProcessing}
+                      >
+                        <Type className="h-4 w-4 mr-1" />
+                        Edit Text
+                      </button>
+                      <button
+                        className="btn join-item btn-sm"
+                        onClick={() => setActiveTab("style")}
+                        disabled={isProcessing}
+                      >
+                        <Palette className="h-4 w-4 mr-1" />
+                        Style
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+
           <div className="lg:col-span-5 space-y-4">
             <div className="flex justify-between items-center mb-4">
               <UndoRedo undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
@@ -583,66 +641,7 @@ export default function ClientDashboard() {
             </div>
           </div>
 
-          <div className="lg:col-span-7">
-            <div className="card bg-base-100 shadow-xl h-full">
-              <div className="card-body">
-                <h2 className="card-title flex items-center">
-                  <Image className="h-5 w-5 mr-2 text-primary" />
-                  Preview
-                </h2>
-                <div className="flex-1 flex items-center justify-center p-4 bg-base-200 rounded-lg min-h-[400px]">
-                  {isProcessing ? (
-                    <div className="text-center">
-                      <span className="loading loading-spinner loading-lg text-primary"></span>
-                      <p className="mt-4 text-base-content/70">Processing your image...</p>
-                    </div>
-                  ) : (
-                    <ImagePreview
-                      backgroundImage={backgroundImage}
-                      subjectImage={subjectImage}
-                      textState={textState}
-                      previewRef={previewRef}
-                    />
-                  )}
-                </div>
 
-                {(backgroundImage || subjectImage) && (
-                  <div className="card-actions justify-center mt-4">
-                    <div className="join">
-                      {isPaid || imageCount < 3 ? (
-                        <button className="btn join-item btn-sm" onClick={handleDownload} disabled={isProcessing}>
-                          <Save className="h-4 w-4 mr-1" />
-                          Save
-                        </button>
-                      ) : (
-                        <PaystackButton
-                          userId={userId}
-                          email={session.user.email || ""}
-                          onPaymentSuccess={handlePaymentSuccess}
-                        />
-                      )}
-                      <button
-                        className="btn join-item btn-sm"
-                        onClick={() => setActiveTab("text")}
-                        disabled={isProcessing}
-                      >
-                        <Type className="h-4 w-4 mr-1" />
-                        Edit Text
-                      </button>
-                      <button
-                        className="btn join-item btn-sm"
-                        onClick={() => setActiveTab("style")}
-                        disabled={isProcessing}
-                      >
-                        <Palette className="h-4 w-4 mr-1" />
-                        Style
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
