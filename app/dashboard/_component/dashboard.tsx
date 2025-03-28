@@ -239,7 +239,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <div className="navbar bg-base-100 border-b px-4 sm:px-6 lg:px-8">
+      <div className="navbar bg-base-100 px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
