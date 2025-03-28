@@ -48,7 +48,7 @@ export default function ClientDashboard() {
   const initialTextState: TextState = {
     text: "text behind image",
     textColor: "#ffffff",
-    fontSize: 90,
+    fontSize: 30,
     fontWeight: "700",
     font: "font-montserrat",
     position: { x: 50, y: 50 },
