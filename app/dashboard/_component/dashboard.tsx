@@ -307,7 +307,7 @@ export default function ClientDashboard() {
         </div>
         <div className="navbar-end">
           <div className="mr-4 badge badge-primary badge-outline">
-            {isPaid ? "Subscribed" : `${Math.max(0, 3 - imageCount)} images left`}
+            {isPaid ? "Subscribed" : `${Math.max(0, 3 - imageCount)} generations left`}
           </div>
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">

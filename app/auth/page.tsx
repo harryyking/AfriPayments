@@ -30,12 +30,12 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen w-full bg-base-200 flex flex-col items-center justify-center p-4">
-      <div className="card shadow-sm p-2">
+      <div className="card shadow-sm p-2 border">
         <div className="card-title text-xl text-center">Sign In</div>
 
         <div className="card-body ">
           <button
-            className="w-full btn btn-primary font-medium card-actions"
+            className="w-full btn btn-primary font-medium"
             onClick={handleSignInGoogle}
             disabled={googleIsLoading}
           >

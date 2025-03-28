@@ -109,7 +109,7 @@ export default function TextControls({
           >
             {fontOptions.map((fontOption) => (
               <option key={fontOption.value} value={fontOption.fontObject.className}>
-                {fontOption.name}
+                {fontOption.fontObject.className}
               </option>
             ))}
           </select>
