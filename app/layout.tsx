@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" >
-      <body className={brandFont.className} data-theme="sunset">
+      <body className={brandFont.className} data-theme="light">
         <Provider>
           <div>
             {children}
