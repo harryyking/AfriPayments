@@ -61,39 +61,7 @@ export default function ClientDashboard() {
   };
   const { state: textState, addToHistory, undo, redo, canUndo, canRedo } = useHistory(initialTextState);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userId) return;
-      try {
-        const response = await fetch(`/api/images`, {
-          credentials: "include",
-        });
-        if (!response.ok) throw new Error("Failed to fetch user data");
-        const data = await response.json();
-        setImageCount(data.images.length);
-        setIsPaid(data.onPaid);
-        setSubscriptionStatus(data.subscriptionStatus || null);
 
-        // Reset image count monthly for subscribed users
-        if (data.onPaid && data.lastReset) {
-          const lastReset = new Date(data.lastReset);
-          const now = new Date();
-          const diffMonths = (now.getFullYear() - lastReset.getFullYear()) * 12 + now.getMonth() - lastReset.getMonth();
-          if (diffMonths >= 1) {
-            await fetch("/api/reset-image-count", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
-            });
-            setImageCount(0);
-          }
-        }
-      } catch (error) {
-        toast.error("Failed to fetch user data");
-      }
-    };
-    fetchUserData();
-  }, [userId]);
 
   const canProcessImage = isPaid || imageCount < 3;
 
@@ -236,6 +204,42 @@ export default function ClientDashboard() {
       </div>
     );
   }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(`/api/images`, {
+          credentials: "include",
+        });
+        if (!response.ok) throw new Error("Failed to fetch user data");
+        const data = await response.json();
+        setImageCount(data.images.length);
+        setIsPaid(data.onPaid);
+        setSubscriptionStatus(data.subscriptionStatus || null);
+
+        // Reset image count monthly for subscribed users
+        if (data.onPaid && data.lastReset) {
+          const lastReset = new Date(data.lastReset);
+          const now = new Date();
+          const diffMonths = (now.getFullYear() - lastReset.getFullYear()) * 12 + now.getMonth() - lastReset.getMonth();
+          if (diffMonths >= 1) {
+            await fetch("/api/reset-image-count", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
+            });
+            setImageCount(0);
+          }
+        }
+      } catch (error) {
+        toast.error("Failed to fetch user data");
+      }
+    };
+    fetchUserData();
+  }, [userId]);
+  
+
 
   return (
     <div className="min-h-screen bg-base-200">
