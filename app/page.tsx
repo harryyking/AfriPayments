@@ -5,77 +5,23 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navigation */}
-      <header className="container mx-auto py-4 px-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">TextVeil</span>
-        </div>
-        <Link href="/auth">
-          <button className="btn btn-ghost">Sign In</button>
-        </Link>
-      </header>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24 flex flex-col items-center text-center">
         <div className="max-w-3xl mx-auto">
+          <div className="flex justify-center mb-6">
+            <Sparkles className="h-10 w-10 text-primary" />
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
             Transform Your Images with TextVeil
           </h1>
           <p className="text-xl text-base-content opacity-70 mb-8 max-w-2xl mx-auto">
-            Effortlessly remove backgrounds and create stunning text overlays with our AI-powered tool. Perfect for
-            designers, marketers, and content creators.
+            Remove backgrounds from your images with AI and add stunning text overlays.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth">
-              <button className="btn btn-primary btn-lg">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
-              </button>
-            </Link>
-            <Link href="#examples">
-              <button className="btn btn-outline btn-lg">See Examples</button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="bg-base-200 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="card bg-base-100 shadow-sm">
-              <div className="card-body items-center text-center">
-                <div className="h-12 w-12 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                  <ImageIcon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title">Background Removal</h3>
-                <p className="text-base-content opacity-70">
-                  Remove backgrounds from any image with just one click using our advanced AI.
-                </p>
-              </div>
-            </div>
-            <div className="card bg-base-100 shadow-sm">
-              <div className="card-body items-center text-center">
-                <div className="h-12 w-12 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                  <Type className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title">Text Overlays</h3>
-                <p className="text-base-content opacity-70">
-                  Add beautiful text that appears behind your subject for a stunning 3D effect.
-                </p>
-              </div>
-            </div>
-            <div className="card bg-base-100 shadow-sm">
-              <div className="card-body items-center text-center">
-                <div className="h-12 w-12 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title">One-Click Export</h3>
-                <p className="text-base-content opacity-70">
-                  Download your creations in high resolution for social media, marketing, or print.
-                </p>
-              </div>
-            </div>
-          </div>
+          <Link href="/auth">
+            <button className="btn btn-primary btn-lg">
+              Open App <ArrowRight className="ml-2 h-4 w-4" />
+            </button>
+          </Link>
         </div>
       </section>
 
@@ -161,79 +107,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="bg-base-200 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">How TextVeil Works</h2>
-          <p className="text-base-content opacity-70 mb-12 text-center max-w-2xl mx-auto">
-            Our simple three-step process makes creating stunning images effortless
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center mb-4 text-primary-content font-bold">
-                1
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Upload Your Image</h3>
-              <p className="text-base-content opacity-70">Upload any image you want to enhance with TextVeil.</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center mb-4 text-primary-content font-bold">
-                2
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Add Your Text</h3>
-              <p className="text-base-content opacity-70">Choose your text, font, and positioning options.</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center mb-4 text-primary-content font-bold">
-                3
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Download & Share</h3>
-              <p className="text-base-content opacity-70">
-                Export your creation in high resolution and share it with the world.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-primary to-secondary py-16 md:py-24 text-primary-content">
+       {/* CTA Section */}
+       <section className="bg-gradient-to-r from-primary to-secondary py-16 md:py-20 text-primary-content mt-auto">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Images?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join thousands of creators who are already using TextVeil to create stunning visuals that stand out.
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create?</h2>
           <Link href="/auth">
             <button className="btn btn-lg bg-base-100 text-primary hover:bg-base-200">
-              Start Creating for Free <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Now <ArrowRight className="ml-2 h-4 w-4" />
             </button>
           </Link>
-          <p className="mt-4 text-sm opacity-80">No credit card required. Free plan includes 5 images per month.</p>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="footer footer-center p-10 bg-neutral text-neutral-content">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-primary-content" />
-            <span className="font-bold">TextVeil</span>
-          </div>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="link link-hover">
-              Privacy
-            </Link>
-            <Link href="/terms" className="link link-hover">
-              Terms
-            </Link>
-            <Link href="/contact" className="link link-hover">
-              Contact
-            </Link>
-          </div>
-          <div className="mt-4 text-sm">© {new Date().getFullYear()} TextVeil. All rights reserved.</div>
-        </div>
-      </footer>
     </div>
   )
 }
