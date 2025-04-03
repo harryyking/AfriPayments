@@ -51,15 +51,13 @@ export default function LandingPage() {
           <div className="flex justify-center mb-6">
             <Sparkles className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
-            Transform Your Images with TextVeil
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          Add beautiful texts behind images with Textveil
           </h1>
-          <p className="text-xl text-base-content opacity-70 mb-8 max-w-2xl mx-auto">
-            Remove backgrounds from your images with AI and add stunning text overlays.
-          </p>
+          
           <Link href="/auth">
-            <button className="btn btn-primary btn-lg">
-              Open App <ArrowRight className="ml-2 h-4 w-4" />
+            <button className="btn btn-outline rounded btn-lg">
+              Open App
             </button>
           </Link>
         </div>
